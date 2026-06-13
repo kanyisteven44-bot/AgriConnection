@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import Sidebar from "../components/Sidebar";
+import Sidebar from "../components/sidebar";
 import { motion } from "framer-motion";
+import * as messageService from "../services/messageService";
 import { colors } from '../constants/theme';
-import '../styles/Inbox.css';
+import './Inbox.css';
 
 function Inbox() {
   const [messages, setMessages] = useState([]);
@@ -11,6 +12,7 @@ function Inbox() {
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showReplyForm, setShowReplyForm] = useState(false);
+  
   const [replyText, setReplyText] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -18,41 +20,10 @@ function Inbox() {
     setLoading(true);
     setError(null);
 
-    // Simulate fetching messages from an API
     const fetchMessages = async () => {
       try {
-        // In a real application, this would be an API call:
-        // const response = await API.get("/messages/inbox");
-        // setMessages(response.data);
-
-        // Dummy data for demonstration
-        const dummyMessages = [
-          {
-            _id: "msg1",
-            sender: "Sarah Jenkins (Bulk Buyer)",
-            subject: "Inquiry about Maize quantity",
-            content: "Hi, I'm interested in purchasing a large quantity of your maize. Could you provide more details on availability and bulk pricing?",
-            timestamp: "2026-06-12T10:30:00Z",
-            read: false,
-          },
-          {
-            _id: "msg2",
-            sender: "GreenGrocer Ltd.",
-            subject: "Offer for Potatoes",
-            content: "We saw your potato listing and would like to make an offer for 500kg. Please let us know if you're open to negotiation.",
-            timestamp: "2026-06-11T15:00:00Z",
-            read: true,
-          },
-          {
-            _id: "msg3",
-            sender: "Local Market Trader",
-            subject: "Tomato harvest date",
-            content: "When is your next tomato harvest expected? We need a fresh supply for next week.",
-            timestamp: "2026-06-10T08:45:00Z",
-            read: true,
-          },
-        ];
-        setMessages(dummyMessages);
+        const data = await messageService.getInboxMessages();
+        setMessages(data);
         setLoading(false);
       } catch (err) {
         console.error("Inbox fetch error:", err);
@@ -66,7 +37,7 @@ function Inbox() {
 
   const handleViewMessage = (message) => {
     setSelectedMessage(message);
-    // Simulate marking as read locally for immediate feedback
+    messageService.markAsRead(message._id);
     setMessages(prev => 
       prev.map(m => m._id === message._id ? { ...m, read: true } : m)
     );
@@ -76,11 +47,10 @@ function Inbox() {
     setShowReplyForm(true);
   };
 
-  const handleSendReply = () => {
+  const handleSendReply = async () => {
     if (!replyText.trim()) return;
-    alert(`Replying to ${selectedMessage.sender} with: "${replyText}" (simulated)`);
-    // In a real app, you'd make an API call here to send the reply
-    // e.g., API.post(`/messages/${selectedMessage._id}/reply`, { content: replyText });
+    await messageService.replyToMessage(selectedMessage._id, replyText);
+    alert(`Replying to ${selectedMessage.sender} (simulated)`);
     setShowReplyForm(false);
     setReplyText("");
     setSelectedMessage(null); // Optionally close modal after sending reply
@@ -90,18 +60,16 @@ function Inbox() {
     setShowDeleteConfirm(true);
   };
 
-  // This function is called after the user confirms deletion
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
+    await messageService.deleteMessage(selectedMessage._id);
     alert(`Message from ${selectedMessage.sender} deleted (simulated).`);
-    // In a real app, you'd make an API call here to delete the message
-    // e.g., API.delete(`/messages/${selectedMessage._id}`).then(() => { ... });
     setSelectedMessage(null); // Close the modal
     setShowDeleteConfirm(false);
-    // Optionally, remove the message from the `messages` state
     setMessages(prev => prev.filter(m => m._id !== selectedMessage._id));
   };
 
-  const handleMarkAsUnread = (messageId) => {
+  const handleMarkAsUnread = async (messageId) => {
+    await messageService.markAsUnread(messageId);
     setMessages(prev => 
       prev.map(m => m._id === messageId ? { ...m, read: false } : m)
     );

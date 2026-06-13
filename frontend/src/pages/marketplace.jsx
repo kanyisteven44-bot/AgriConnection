@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import API from "../services/api";
-import Sidebar from "../components/Sidebar";
+import * as cropService from "../services/cropService";
+import Sidebar from "../components/sidebar";
 import { motion } from "framer-motion";
 import { colors } from '../constants/theme'; // Import colors
-import '../styles/Marketplace.css'; // Import a dedicated CSS file
+import './Marketplace.css'; // Import a dedicated CSS file
 
 function Marketplace() {
   const [crops, setCrops] = useState([]);
@@ -20,20 +20,19 @@ function Marketplace() {
   const [isMessaging, setIsMessaging] = useState(false);
   const [relatedCrops, setRelatedCrops] = useState([]);
   const [messageText, setMessageText] = useState("");
-
-  const buyersData = [
-    { _id: "b1", name: "GreenLife Millers", interest: "Maize", location: "Nairobi", demand: "High", rating: 4.8, verified: true },
-    { _id: "b2", name: "Harvest Traders Ltd", interest: "Maize", location: "Eldoret", demand: "Medium", rating: 4.5, verified: true },
-    { _id: "b3", name: "Umoja Co-op", interest: "Vegetables", location: "Nakuru", demand: "High", rating: 4.9, verified: true },
-    { _id: "b4", name: "Fresh Express", interest: "Tomatoes", location: "Mombasa", demand: "Low", rating: 4.2, verified: false },
-  ];
+  const [buyersData, setBuyersData] = useState([]);
 
   useEffect(() => {
     setLoading(true);
     setError(null);
-    API.get("/crops")
-      .then(res => {
-        setCrops(res.data);
+    
+    Promise.all([
+      cropService.getCrops(),
+      cropService.getBuyers()
+    ])
+      .then(([cropsData, buyers]) => {
+        setCrops(cropsData);
+        setBuyersData(buyers);
         setLoading(false);
       })
       .catch(err => {
@@ -64,9 +63,9 @@ function Marketplace() {
     setSortOrder("asc");
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!messageText.trim()) return;
-    // Integration point: In a full app, this would call an API like API.post("/messages", ...)
+    await cropService.sendMessageToFarmer(selectedCrop._id, messageText);
     alert(`Message sent to ${selectedCrop.farmerName || 'the farmer'}: ${messageText}`);
     setIsMessaging(false);
     setMessageText("");

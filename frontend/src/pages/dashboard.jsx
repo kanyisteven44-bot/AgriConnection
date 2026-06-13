@@ -1,13 +1,21 @@
-import Sidebar from "../components/Sidebar";
+import Sidebar from "../components/sidebar";
 import { motion } from "framer-motion";
-import { colors } from '../pages/theme';
-import '../styles/Dashboard.css'; // Import a dedicated CSS file for Dashboard styles
+import { useAuth } from "../context/AuthContext";
+import { colors } from '../constants/theme';
+import './Dashboard.css'; // Import a dedicated CSS file for Dashboard styles
 
 function Dashboard() {
-  const userName = "Samuel"; // This would come from auth context
+  const { user } = useAuth();
+  const userName = user?.name || "Samuel";
 
   return (
-    <div className="dashboard-page">
+    <div className="dashboard-page" style={{
+      backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.92)), url("https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&q=80&w=2000")',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed',
+      minHeight: '100vh'
+    }}>
       <Sidebar />
 
       <div className="dashboard-content">

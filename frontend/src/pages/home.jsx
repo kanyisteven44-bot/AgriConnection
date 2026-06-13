@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Navbar from '../components/Navbar';
 import { colors } from '../constants/theme'; // Import colors from theme file
-import '../styles/Home.css'; // Import a dedicated CSS file for Home page styles
+import './Home.css'; // Import a dedicated CSS file for Home page styles
 
 const Home = () => {
   const features = [
@@ -32,7 +32,11 @@ const Home = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="hero-section">
+      <section className="hero-section" style={{
+        backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url("https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&q=80&w=2000")',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}>
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -118,7 +122,16 @@ const Home = () => {
       <footer className="footer-section">
         <div className="footer-content">
           <div className="footer-brand">
-            <h3 style={{ color: colors.accentGold, marginBottom: '20px' }}>🌾 AgriConnection</h3>
+            <h3 style={{ 
+              color: colors.accentGold, 
+              marginBottom: '20px', 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '10px' 
+            }}>
+              <span style={{ backgroundColor: colors.accentGold, color: colors.primaryGreen, padding: '4px', borderRadius: '4px' }}>🌾</span>
+              AgriConnection
+            </h3>
             <p style={{ fontSize: '0.9rem', color: '#bbb', lineHeight: '1.6' }}>
               The comprehensive digital ecosystem for modern agriculture. Empowering the backbone of our economy through technology.
             </p>

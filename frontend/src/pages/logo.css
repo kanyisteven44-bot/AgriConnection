@@ -1,0 +1,39 @@
+.logo-container {
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.logo-icon-box {
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.3s ease;
+}
+
+.logo-container:hover .logo-icon-box {
+  transform: scale(1.15) rotate(-8deg);
+  filter: brightness(1.1);
+  box-shadow: 0 4px 15px rgba(11, 93, 59, 0.2);
+}
+
+.logo-icon-box span {
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.logo-container:hover .logo-icon-box span {
+  animation: wheat-wave 2s ease-in-out infinite;
+}
+
+@keyframes wheat-wave {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-12deg); }
+  75% { transform: rotate(12deg); }
+}
+
+.logo-text {
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.logo-container:hover .logo-text {
+  transform: translateX(4px);
+  filter: contrast(1.1);
+}

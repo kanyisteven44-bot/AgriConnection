@@ -1,45 +1,45 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../services/api";
+import * as authService from "../services/authService";
 import Navbar from "../components/Navbar";
 import { colors } from '../constants/theme';
-import '../styles/Auth.css'; // Dedicated CSS for auth pages
+import { useAuth } from "../context/AuthContext";
+import { useToast } from "../components/ToastContext";
+import PasswordInput from "../components/PasswordInput";
+import './Auth.css'; // Dedicated CSS for auth pages
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { login } = useAuth();
+  const { showToast } = useToast();
 
-  const login = async () => {
-    setError(null);
-
+  const handleLogin = async () => {
     // Client-side validation
     if (!email || !password) {
-      setError("Email and password are required.");
+      showToast("Email and password are required.");
       return;
     }
     if (!/\S+@\S+\.\S+/.test(email)) {
-      setError("Invalid email format.");
+      showToast("Invalid email format.");
       return;
     }
 
     try {
-      const res = await API.post("/auth/login", {
-        email,
-        password
-      });
+      const data = await authService.loginUser(email, password);
   
-      localStorage.setItem("token", res.data.token);
+      login(data.token, data.user);
+      showToast("Welcome back!", "success");
       // Use a more subtle notification or redirect directly
       // alert("Login successful");
       navigate("/dashboard");
     } catch (err) {
-      if (err.response?.status === 403) {
-        setError("Account not verified. Please check your email for the code.");
+      if (err.status === 403) {
+        showToast("Account not verified. Please check your email for the code.");
         return;
       }
-      setError(err.response?.data?.message || "Login failed.");
+      showToast(err.message);
     }
   };
 
@@ -49,17 +49,18 @@ function Login() {
       <div className="auth-container card">
         <h2>Login</h2>
 
-        {error && <p className="error-message">{error}</p>}
-
         <div className="form-group">
-          <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
+          <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" />
         </div>
 
-        <div className="form-group">
-          <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
-        </div>
+        <PasswordInput
+          placeholder="Password"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          autoComplete="current-password"
+        />
 
-        <button className="auth-button" onClick={login}>Login</button>
+        <button className="auth-button" onClick={handleLogin}>Login</button>
       </div>
     </div>
   );
