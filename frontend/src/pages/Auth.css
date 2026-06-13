@@ -1,0 +1,62 @@
+/* General Auth Page Styles */
+.auth-container {
+  max-width: 400px;
+  margin: 100px auto 50px; /* Adjust margin-top to account for fixed Navbar */
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  background-color: var(--color-white);
+  text-align: center;
+}
+
+.auth-container h2 {
+  color: var(--color-primary-green);
+  margin-bottom: 30px;
+  font-size: 2rem;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group input {
+  width: calc(100% - 20px); /* Account for padding */
+  padding: 12px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+  border-color: var(--color-primary-green);
+  outline: none;
+}
+
+.auth-button {
+  background-color: var(--color-primary-green);
+  color: var(--color-white);
+  padding: 12px 25px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.auth-button:hover {
+  background-color: var(--color-secondary-green);
+}
+
+.error-message {
+  color: #d32f2f; /* A standard error red */
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+}
+
+.success-message {
+  color: #388e3c; /* A standard success green */
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+}

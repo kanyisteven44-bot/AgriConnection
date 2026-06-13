@@ -2,17 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Navbar from '../components/Navbar';
+import { colors } from '../constants/theme'; // Import colors from theme file
+import '../styles/Home.css'; // Import a dedicated CSS file for Home page styles
 
 const Home = () => {
-  // Theme Colors
-  const colors = {
-    primaryGreen: '#1B5E20',
-    secondaryGreen: '#2E7D32',
-    accentGold: '#FFC107',
-    white: '#FFFFFF',
-    lightGray: '#F5F5F5'
-  };
-
   const features = [
     { title: 'Smart Marketplace', desc: 'Directly connect with local and global buyers in a transparent environment.', icon: '🛒' },
     { title: 'AI Crop Prediction', desc: 'Leverage machine learning to predict yields and optimize planting schedules.', icon: '🤖' },
@@ -35,72 +28,43 @@ const Home = () => {
   ];
 
   return (
-    <div style={{ backgroundColor: colors.white, fontFamily: "'Inter', sans-serif" }}>
+    <div className="home-container">
       <Navbar />
 
       {/* Hero Section */}
-      <section style={{ 
-        padding: '120px 20px 80px', 
-        background: `linear-gradient(rgba(27, 94, 32, 0.05), rgba(255, 255, 255, 1))`,
-        textAlign: 'center' 
-      }}>
+      <section className="hero-section">
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <h1 style={{ color: colors.primaryGreen, fontSize: '3rem', fontWeight: '800', marginBottom: '20px' }}>
+          <h1 className="hero-title">
             Connecting Farmers, Buyers <br /> and Opportunities
           </h1>
-          <p style={{ color: '#444', fontSize: '1.2rem', maxWidth: '800px', margin: '0 auto 40px', lineHeight: '1.6' }}>
+          <p className="hero-description">
             AgriConnection empowers farmers with market access, AI-powered insights, financing opportunities and direct buyer connections.
           </p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', flexWrap: 'wrap' }}>
-            <Link to="/register" style={{ textDecoration: 'none' }}>
-              <button style={{ 
-                backgroundColor: colors.primaryGreen, 
-                color: 'white', 
-                padding: '15px 35px', 
-                borderRadius: '8px', 
-                border: 'none', 
-                fontSize: '1rem', 
-                fontWeight: '600',
-                cursor: 'pointer',
-                boxShadow: '0 4px 14px rgba(27, 94, 32, 0.3)'
-              }}>Get Started</button>
+          <div className="hero-buttons">
+            <Link to="/register" className="button-link">
+              <button className="primary-button">Get Started</button>
             </Link>
-            <Link to="/marketplace" style={{ textDecoration: 'none' }}>
-              <button style={{ 
-                backgroundColor: colors.white, 
-                color: colors.primaryGreen, 
-                padding: '15px 35px', 
-                borderRadius: '8px', 
-                border: `2px solid ${colors.primaryGreen}`, 
-                fontSize: '1rem', 
-                fontWeight: '600',
-                cursor: 'pointer'
-              }}>Explore Marketplace</button>
+            <Link to="/marketplace" className="button-link">
+              <button className="secondary-button">Explore Marketplace</button>
             </Link>
           </div>
         </motion.div>
       </section>
 
       {/* Features Section */}
-      <section style={{ padding: '80px 20px', backgroundColor: colors.white }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <h2 style={{ textAlign: 'center', color: colors.primaryGreen, marginBottom: '50px', fontSize: '2.2rem' }}>Core Features</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px' }}>
+      <section className="features-section">
+        <div className="features-container">
+          <h2 className="section-title">Core Features</h2>
+          <div className="features-grid">
             {features.map((f, idx) => (
               <motion.div 
                 key={idx}
                 whileHover={{ y: -10 }}
-                style={{ 
-                  padding: '40px', 
-                  borderRadius: '12px', 
-                  backgroundColor: 'white', 
-                  boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
-                  border: '1px solid #eee'
-                }}
+                className="feature-card"
               >
                 <div style={{ fontSize: '2.5rem', marginBottom: '20px' }}>{f.icon}</div>
                 <h3 style={{ color: colors.secondaryGreen, marginBottom: '15px' }}>{f.title}</h3>
@@ -112,10 +76,10 @@ const Home = () => {
       </section>
 
       {/* Statistics Section */}
-      <section style={{ padding: '60px 20px', backgroundColor: colors.primaryGreen, color: 'white' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '40px' }}>
+      <section className="stats-section">
+        <div className="stats-container">
           {stats.map((s, idx) => (
-            <div key={idx} style={{ textAlign: 'center' }}>
+            <div key={idx} className="stat-item">
               <h2 style={{ fontSize: '2.5rem', color: colors.accentGold, marginBottom: '5px' }}>{s.value}</h2>
               <p style={{ fontSize: '1rem', opacity: '0.9' }}>{s.label}</p>
             </div>
@@ -124,19 +88,12 @@ const Home = () => {
       </section>
 
       {/* Testimonials */}
-      <section style={{ padding: '80px 20px', backgroundColor: colors.lightGray }}>
-        <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-          <h2 style={{ textAlign: 'center', color: colors.primaryGreen, marginBottom: '50px' }}>What Our Users Say</h2>
-          <div style={{ display: 'flex', gap: '30px', flexWrap: 'wrap', justifyContent: 'center' }}>
+      <section className="testimonials-section">
+        <div className="testimonials-container">
+          <h2 className="section-title">What Our Users Say</h2>
+          <div className="testimonials-grid">
             {testimonials.map((t, idx) => (
-              <div key={idx} style={{ 
-                backgroundColor: 'white', 
-                padding: '30px', 
-                borderRadius: '12px', 
-                flex: '1', 
-                minWidth: '300px',
-                boxShadow: '0 5px 15px rgba(0,0,0,0.03)'
-              }}>
+              <div key={idx} className="testimonial-card">
                 <p style={{ fontStyle: 'italic', marginBottom: '20px', color: '#555' }}>"{t.text}"</p>
                 <h4 style={{ color: colors.primaryGreen, marginBottom: '2px' }}>{t.name}</h4>
                 <small style={{ color: '#888' }}>{t.role}</small>
@@ -147,10 +104,10 @@ const Home = () => {
       </section>
 
       {/* Partners Section (Placeholders) */}
-      <section style={{ padding: '60px 20px', textAlign: 'center' }}>
-        <p style={{ color: '#999', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '30px', fontSize: '0.8rem' }}>Trusted by Industry Leaders</p>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '50px', opacity: 0.5, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>AgriBank</span>
+      <section className="partners-section">
+        <p className="partners-intro">Trusted by Industry Leaders</p>
+        <div className="partners-list">
+          <span className="partner-logo">AgriBank</span>
           <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>GlobalLogistics</span>
           <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>EcoFarm</span>
           <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>TechSeed</span>
@@ -158,9 +115,9 @@ const Home = () => {
       </section>
 
       {/* Footer */}
-      <footer style={{ backgroundColor: '#111', color: 'white', padding: '80px 20px 40px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '40px' }}>
-          <div>
+      <footer className="footer-section">
+        <div className="footer-content">
+          <div className="footer-brand">
             <h3 style={{ color: colors.accentGold, marginBottom: '20px' }}>🌾 AgriConnection</h3>
             <p style={{ fontSize: '0.9rem', color: '#bbb', lineHeight: '1.6' }}>
               The comprehensive digital ecosystem for modern agriculture. Empowering the backbone of our economy through technology.
@@ -193,51 +150,10 @@ const Home = () => {
             </p>
           </div>
         </div>
-        <div style={{ 
-          maxWidth: '1200px', 
-          margin: '60px auto 0', 
-          paddingTop: '20px', 
-          borderTop: '1px solid #333', 
-          textAlign: 'center',
-          fontSize: '0.8rem',
-          color: '#666'
-        }}>
+        <div className="footer-bottom">
           © {new Date().getFullYear()} AgriConnection Platform. All rights reserved.
         </div>
       </footer>
-
-      {/* Inline Global Styles for Cards/Containers */}
-      <style dangerouslySetInnerHTML={{ __html: `
-        .card {
-          transition: all 0.3s ease;
-        }
-        input:focus {
-          outline: none;
-          border-color: ${colors.primaryGreen};
-        }
-        nav {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 20px 5%;
-          background: white;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-          position: fixed;
-          top: 0;
-          width: 90%;
-          z-index: 1000;
-        }
-        nav a {
-          text-decoration: none;
-          color: #333;
-          margin-left: 25px;
-          font-weight: 500;
-          font-size: 0.9rem;
-        }
-        nav a:hover {
-          color: ${colors.primaryGreen};
-        }
-      `}} />
     </div>
   );
 };

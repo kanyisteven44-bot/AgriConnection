@@ -1,0 +1,354 @@
+/* Marketplace Page Layout */
+.marketplace-page {
+  display: flex;
+  font-family: 'Inter', sans-serif;
+}
+
+.marketplace-content {
+  margin-left: 240px; /* Adjust based on Sidebar width */
+  padding: 20px;
+  flex-grow: 1;
+}
+
+.marketplace-content h1 {
+  color: var(--color-primary-green);
+  margin-bottom: 30px;
+}
+
+.marketplace-content h2 {
+  color: var(--color-secondary-green);
+  margin: 40px 0 20px;
+}
+
+.market-subtitle {
+  color: #666;
+  margin-top: -25px;
+  margin-bottom: 30px;
+}
+
+/* Filters Section */
+.filters-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 30px;
+  background-color: var(--color-light-gray);
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-group input,
+.filter-group select {
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background-color: var(--color-white);
+}
+
+.filter-group input:focus,
+.filter-group select:focus {
+  outline: none;
+  border-color: var(--color-primary-green);
+}
+
+.reset-button {
+  background-color: #eee;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+  margin-left: 10px;
+}
+.reset-button:hover { background-color: #ddd; }
+
+.price-range input {
+  width: 100px;
+}
+
+.search-bar input {
+  width: 250px;
+}
+
+/* Crops Grid */
+.crops-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px; /* Increased gap for better spacing */
+}
+
+.crop-card {
+  background-color: var(--color-white);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  width: 220px; /* Fixed width for cards */
+  transition: transform 0.2s ease-in-out;
+}
+
+.crop-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+.crop-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--color-light-gray);
+  color: var(--color-secondary-green);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+
+.crop-card h3 { color: var(--color-primary-green); margin: 10px 0; }
+.crop-card p { font-size: 0.85rem; color: #555; margin: 5px 0; }
+
+.price-tag {
+  display: flex;
+  flex-direction: column;
+  margin: 15px 0;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 6px;
+}
+
+.price-value { font-weight: 800; font-size: 1.1rem; color: #333; }
+.market-avg { font-size: 0.75rem; color: #888; text-decoration: line-through; }
+
+.card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.buy-button {
+  width: 100%;
+  background-color: var(--color-primary-green);
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.buy-button:hover { background-color: var(--color-secondary-green); }
+
+.details-button {
+  width: 100%;
+  background-color: var(--color-white);
+  color: var(--color-primary-green);
+  border: 2px solid var(--color-primary-green);
+  padding: 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.details-button:hover {
+  background-color: var(--color-light-gray);
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.modal-card {
+  background-color: var(--color-white);
+  padding: 40px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 500px;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.close-modal {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #888;
+}
+
+.modal-details p {
+  margin: 12px 0;
+  font-size: 1rem;
+  color: #444;
+}
+
+.farmer-info {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.farmer-info h3 {
+  color: var(--color-primary-green);
+  margin-bottom: 15px;
+}
+
+.farmer-info p {
+  margin: 8px 0;
+}
+
+/* Messaging Component Styles */
+.messaging-section {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 2px solid var(--color-light-gray);
+  text-align: left;
+}
+
+.messaging-section h3 {
+  color: var(--color-primary-green);
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+}
+
+.message-input {
+  width: 100%;
+  height: 100px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  resize: vertical;
+  margin-bottom: 15px;
+  box-sizing: border-box;
+}
+
+.message-input:focus {
+  outline: none;
+  border-color: var(--color-primary-green);
+}
+
+.messaging-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.messaging-actions .buy-button {
+  margin-top: 0;
+  flex: 2;
+}
+
+.messaging-actions .details-button {
+  flex: 1;
+}
+
+/* Buyers Section */
+.buyers-section {
+  margin-top: 50px;
+  padding-top: 30px;
+  border-top: 2px solid var(--color-light-gray);
+}
+
+.buyers-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.buyer-card {
+  background-color: #f9fbf9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  width: 220px;
+  border: 1px solid #e0eadd;
+  transition: transform 0.2s ease-in-out;
+}
+
+.buyer-card:hover {
+  transform: translateY(-5px);
+}
+
+.buyer-card h3 {
+  color: var(--color-secondary-green);
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+}
+
+.verified-badge {
+  display: inline-block;
+  background: #e6f4ea;
+  color: #0b5d3b;
+  font-size: 0.7rem;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.buyer-rating {
+  font-size: 0.8rem;
+  margin-bottom: 10px;
+}
+
+.buyer-card p {
+  font-size: 0.85rem;
+  color: #555;
+  margin: 5px 0;
+}
+
+.demand-tag {
+  font-weight: 600;
+  padding: 4px 0;
+}
+
+.demand-tag.high { color: #d32f2f; }
+.demand-tag.medium { color: var(--color-accent-gold); }
+.demand-tag.low { color: #555; }
+
+.contact-button {
+  width: 100%;
+  background-color: var(--color-secondary-green);
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background 0.3s;
+}
+
+.contact-button:hover {
+  background-color: var(--color-primary-green);
+}
+
+/* Error Message */
+.error-message {
+  color: red;
+  font-weight: bold;
+}

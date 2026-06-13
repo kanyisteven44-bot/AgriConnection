@@ -1,0 +1,34 @@
+/* Dashboard Page Layout */
+.dashboard-page {
+  display: flex;
+  font-family: 'Inter', sans-serif;
+}
+
+.dashboard-content {
+  margin-left: 240px; /* Adjust based on Sidebar width */
+  padding: 20px;
+  flex-grow: 1;
+}
+
+.dashboard-content h1 {
+  color: var(--color-primary-green);
+  margin-bottom: 30px;
+}
+
+/* Dashboard Cards Grid */
+.dashboard-cards-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.dashboard-cards-grid .card {
+  background-color: var(--color-white);
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  min-width: 180px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--color-secondary-green);
+}
