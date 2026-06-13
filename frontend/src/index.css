@@ -1,0 +1,66 @@
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: #f4f7f5;
+  color: #1a1a1a;
+}
+
+/* Smooth cards */
+.card {
+  background: white;
+  padding: 18px;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+/* Buttons */
+button {
+  background: linear-gradient(135deg, #2e7d32, #1b5e20);
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+/* Layout */
+.container {
+  padding: 20px;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  height: 100vh;
+  background: #1b5e20;
+  color: white;
+  padding: 20px;
+  position: fixed;
+}
+@media (max-width: 768px) {
+  .sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+  }
+
+  .card {
+    width: 100% !important;
+  }
+
+  nav {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
