@@ -9,13 +9,13 @@ export async function GET(request) {
     }
 
     // Enforce admin-only access
-    const roleCheck =
-      await sql`SELECT role FROM auth_users WHERE id = ${session.user.id}`;
+    const roleCheck = await sql`SELECT role FROM auth_users WHERE id = ${session.user.id}`;
     if (roleCheck[0]?.role !== "admin")
       return Response.json({ error: "Forbidden" }, { status: 403 });
 
     const { searchParams } = new URL(request.url);
     const rawLimit = parseInt(searchParams.get("limit") || "50");
+    // Clamp limit between 1 and 200
     const limit = isNaN(rawLimit) ? 50 : Math.min(Math.max(rawLimit, 1), 200);
     const type = searchParams.get("type") || "";
 
@@ -39,7 +39,7 @@ export async function GET(request) {
       `;
     }
 
-    return Response.json({ logs });
+    return Response.json({ logs: logs || [] });
   } catch (err) {
     console.error("GET /api/admin/ai-logs error", err);
     return Response.json({ error: "Internal Server Error" }, { status: 500 });

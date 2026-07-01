@@ -1,26 +1,24 @@
+function getBaseUrl(request) {
+  if (process.env.AUTH_URL) return process.env.AUTH_URL;
+  if (process.env.NEXT_PUBLIC_CREATE_APP_URL) return process.env.NEXT_PUBLIC_CREATE_APP_URL;
+  const url = new URL(request.url);
+  return `${url.protocol}//${url.host}`;
+}
+
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const city = searchParams.get("city") || "Nairobi";
 
-    const baseUrl =
-      process.env.AUTH_URL ||
-      process.env.NEXT_PUBLIC_CREATE_APP_URL ||
-      "http://localhost:3000";
+    const baseUrl = getBaseUrl(request);
 
     const response = await fetch(
-      `${baseUrl}/integrations/weather-by-city?city=${encodeURIComponent(city)}`,
+      `${baseUrl}/integrations/weather-by-city?city=${encodeURIComponent(city)}`
     );
+
     if (!response.ok) {
-      const conditions = [
-        "Sunny",
-        "Partly Cloudy",
-        "Cloudy",
-        "Light Rain",
-        "Clear",
-      ];
-      const condition =
-        conditions[Math.floor(Math.random() * conditions.length)];
+      const conditions = ["Sunny", "Partly Cloudy", "Cloudy", "Light Rain", "Clear"];
+      const condition = conditions[Math.floor(Math.random() * conditions.length)];
       return Response.json({
         temperature: Math.floor(Math.random() * 8) + 20,
         condition,
@@ -36,6 +34,7 @@ export async function GET(request) {
             : "Good day for farm activities. Monitor crop moisture levels.",
       });
     }
+
     const weatherData = await response.json();
     return Response.json({ ...weatherData, city });
   } catch (err) {

@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "@anythingai/app": "0.1.98",
+    "@supabase/supabase-js": "^2.49.4",
     "@expo-google-fonts/dev": "0.4.7",
     "@expo/ngrok": "4.1.3",
     "@expo/vector-icons": "15.0.3",

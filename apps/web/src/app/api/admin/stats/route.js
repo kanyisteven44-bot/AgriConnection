@@ -8,8 +8,7 @@ export async function GET() {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
 
     // Enforce admin-only access
-    const roleCheck =
-      await sql`SELECT role FROM auth_users WHERE id = ${session.user.id}`;
+    const roleCheck = await sql`SELECT role FROM auth_users WHERE id = ${session.user.id}`;
     if (roleCheck[0]?.role !== "admin")
       return Response.json({ error: "Forbidden" }, { status: 403 });
 
@@ -27,8 +26,15 @@ export async function GET() {
       sql`SELECT COUNT(*) as total, COUNT(CASE WHEN is_available = true THEN 1 END) as active FROM products`,
       sql`SELECT COUNT(*) as total, COUNT(CASE WHEN status = 'in_transit' THEN 1 END) as active FROM deliveries`,
       sql`SELECT role, COUNT(*) as count FROM auth_users GROUP BY role ORDER BY count DESC`,
-      sql`SELECT id, name, email, role, is_verified, created_at FROM auth_users ORDER BY created_at DESC LIMIT 20`,
-      sql`SELECT o.id, o.total_price, o.status, o.created_at, p.name as product_name, u.name as buyer_name FROM orders o LEFT JOIN products p ON o.product_id = p.id LEFT JOIN auth_users u ON o.buyer_id = u.id ORDER BY o.created_at DESC LIMIT 10`,
+      sql`SELECT id, name, email, role, is_verified, created_at, location, profile_photo FROM auth_users ORDER BY created_at DESC LIMIT 20`,
+      sql`
+        SELECT o.id, o.total_price, o.status, o.created_at, 
+               p.name as product_name, u.name as buyer_name 
+        FROM orders o 
+        LEFT JOIN products p ON o.product_id = p.id 
+        LEFT JOIN auth_users u ON o.buyer_id = u.id 
+        ORDER BY o.created_at DESC LIMIT 10
+      `,
     ]);
 
     return Response.json({
@@ -43,9 +49,9 @@ export async function GET() {
         deliveries: parseInt(deliveryStats[0]?.total || 0),
         activeDeliveries: parseInt(deliveryStats[0]?.active || 0),
       },
-      roleBreakdown,
-      recentUsers,
-      recentOrders,
+      roleBreakdown: roleBreakdown || [],
+      recentUsers: recentUsers || [],
+      recentOrders: recentOrders || [],
     });
   } catch (err) {
     console.error("GET /api/admin/stats error", err);

@@ -91,6 +91,7 @@ function MainComponent() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [otp, setOtp] = useState("");
   const [role, setRole] = useState("farmer");
+  const [devOtp, setDevOtp] = useState(null);
   const { signUpWithCredentials } = useAuth();
 
   const pwStrength = (() => {
@@ -144,10 +145,11 @@ function MainComponent() {
       const res = await fetch("/api/auth/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, type: "signup" }),
+        body: JSON.stringify({ email, type: "signup", name }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to send code");
+      if (data.otp_dev) setDevOtp(data.otp_dev);
       setStep(2);
     } catch (err) {
       setError(err.message);
@@ -167,7 +169,7 @@ function MainComponent() {
       const res = await fetch("/api/auth/send-otp", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp }),
+        body: JSON.stringify({ email, otp, type: "signup" }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Invalid code");
@@ -184,9 +186,12 @@ function MainComponent() {
     setLoading(true);
     setError(null);
     try {
-      if (typeof window !== "undefined") {
-        localStorage.setItem("pendingRole", role);
-        if (phone) localStorage.setItem("pendingPhone", phone);
+      // Safe localStorage access (prevents SSR crash)
+      if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
+        try {
+          localStorage.setItem("pendingRole", role);
+          if (phone) localStorage.setItem("pendingPhone", phone);
+        } catch {}
       }
       await signUpWithCredentials({
         email,
@@ -292,7 +297,7 @@ function MainComponent() {
                     className="w-full px-4 py-4 rounded-2xl border border-[#C5D8C5] focus:outline-none focus:ring-2 focus:ring-[#4CAF50] bg-white font-medium text-[#1A1A1A]"
                   />
                   <p className="text-xs text-[#9BA8A0] mt-1">
-                    📧 A 6-digit verification code (valid 5 mins) will be sent
+                    📧 A 6-digit verification code (valid 10 mins) will be sent
                     to this email
                   </p>
                 </div>
@@ -426,12 +431,28 @@ function MainComponent() {
                     className="w-full px-4 py-5 rounded-2xl border border-[#C5D8C5] focus:outline-none focus:ring-2 focus:ring-[#4CAF50] bg-white font-black text-[#1A1A1A] text-center text-3xl tracking-[12px]"
                   />
                   <p className="text-xs text-[#9BA8A0] text-center mt-2">
-                    Code expires in 5 minutes
+                    Code expires in 10 minutes
                   </p>
+                  {devOtp && (
+                    <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-xl text-center">
+                      <p className="text-xs font-bold text-yellow-700 mb-1">
+                        📧 Email not configured — use this code for testing:
+                      </p>
+                      <p
+                        className="text-2xl font-black text-yellow-800 tracking-[8px] cursor-pointer hover:opacity-70"
+                        onClick={() => setOtp(devOtp)}
+                        title="Click to auto-fill"
+                      >
+                        {devOtp}
+                      </p>
+                      <p className="text-[10px] text-yellow-600 mt-1">Click code to auto-fill</p>
+                    </div>
+                  )}
                 </div>
                 <button
                   type="button"
                   onClick={async () => {
+                    setDevOtp(null);
                     setOtp("");
                     await sendOtp();
                   }}

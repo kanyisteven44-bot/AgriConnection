@@ -1,187 +1,289 @@
 import sql from "@/app/api/utils/sql";
-import { sendEmail } from "@/app/api/utils/send-email";
+import crypto from "node:crypto";
 
-const MAX_RESENDS = 5;
-const MAX_VERIFY_ATTEMPTS = 5;
-const OTP_EXPIRY_MS = 5 * 60 * 1000; // 5 minutes
-const RESEND_COOLDOWN_SECS = 30;
+// ── Constants ──────────────────────────────────────────────
+const MAX_RESENDS       = 5;
+const MAX_VERIFY_ATTS   = 5;
+const OTP_EXPIRY_MS     = 10 * 60 * 1000;   // 10 minutes (as required)
+const RESEND_COOLDOWN_S = 30;
 
+// ── Helpers ────────────────────────────────────────────────
 function generateOtp() {
-  return String(Math.floor(100000 + Math.random() * 900000));
+  // Cryptographically random 6-digit OTP
+  const bytes = crypto.randomBytes(3);
+  const num   = (bytes.readUIntBE(0, 3) % 900000) + 100000;
+  return String(num);
 }
 
-function buildEmailTemplate(otp, isSignup) {
-  return `
-    <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;background:#f4f7f2;padding:32px;border-radius:16px;">
-      <div style="text-align:center;margin-bottom:28px;">
-        <div style="background:#2E7D32;width:64px;height:64px;border-radius:18px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px;">
-          <span style="font-size:30px;">🌾</span>
-        </div>
-        <h1 style="color:#1B5E20;font-size:22px;margin:0;font-weight:900;">AgriConnection</h1>
-        <p style="color:#9BA8A0;font-size:13px;margin:4px 0 0;">Kenya's Smart Agriculture Platform</p>
-      </div>
-      <div style="background:white;border-radius:16px;padding:36px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.06);">
-        <h2 style="color:#1A1A1A;margin-top:0;font-size:20px;">
-          ${isSignup ? "Verify Your Email Address" : "Password Reset Code"}
-        </h2>
-        <p style="color:#6B6B6B;line-height:1.7;font-size:15px;">
-          ${
-            isSignup
-              ? "Welcome to AgriConnection! Enter this 6-digit code to verify your email and activate your account:"
-              : "Enter this 6-digit code to reset your AgriConnection password:"
-          }
-        </p>
-        <div style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border:2.5px solid #2E7D32;border-radius:16px;padding:24px;margin:28px 0;">
-          <p style="font-size:48px;font-weight:900;letter-spacing:16px;color:#1B5E20;margin:0;font-family:'Courier New',monospace;">${otp}</p>
-        </div>
-        <p style="color:#9BA8A0;font-size:13px;line-height:1.6;">
-          ⏱️ This code expires in <strong>5 minutes</strong>.<br/>
-          If you didn't request this, please ignore this email.
-        </p>
-        <div style="margin-top:24px;padding-top:24px;border-top:1px solid #F0F0F0;">
-          <p style="color:#AAAA;font-size:12px;margin:0;">For security, never share this code with anyone.</p>
-        </div>
-      </div>
-      <p style="text-align:center;color:#9BA8A0;font-size:12px;margin-top:24px;">
-        © 2026 AgriConnection — Connecting Farmers to Opportunities 🌱
+function hashOtp(otp) {
+  // SHA-256 hash — fast enough for OTP, no salt needed (6-digit space + expiry)
+  return crypto.createHash("sha256").update(otp).digest("hex");
+}
+
+function verifyOtp(otp, hash) {
+  return hashOtp(otp) === hash;
+}
+
+function buildEmailHtml(otp, userName, isSignup) {
+  const greeting  = userName ? `Hello ${userName.split(" ")[0]},` : "Hello,";
+  const action    = isSignup ? "verify your email address" : "reset your password";
+  const footerMsg = isSignup
+    ? "If you did not create an account, please ignore this email."
+    : "If you did not request a password reset, please ignore this email.";
+
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width"/></head>
+<body style="margin:0;padding:0;background:#f0f4f0;font-family:Arial,Helvetica,sans-serif;">
+  <div style="max-width:560px;margin:32px auto;background:#f0f4f0;padding:24px;border-radius:20px;">
+
+    <!-- Header -->
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="display:inline-flex;align-items:center;justify-content:center;
+                  width:72px;height:72px;background:#2E7D32;border-radius:20px;
+                  font-size:36px;margin-bottom:12px;">🌾</div>
+      <h1 style="color:#1B5E20;font-size:24px;margin:0;font-weight:900;letter-spacing:-0.5px;">
+        AgriConnection
+      </h1>
+      <p style="color:#9BA8A0;font-size:13px;margin:4px 0 0;">
+        Kenya's Smart Agriculture Platform
       </p>
     </div>
-  `;
+
+    <!-- Card -->
+    <div style="background:white;border-radius:20px;padding:40px 36px;text-align:center;
+                box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+      <h2 style="color:#1A1A1A;margin:0 0 8px;font-size:22px;font-weight:900;">
+        ${isSignup ? "Verify Your Email" : "Password Reset Code"}
+      </h2>
+      <p style="color:#555;font-size:15px;line-height:1.7;margin:0 0 28px;">
+        ${greeting}<br/>
+        Use the code below to ${action}:
+      </p>
+
+      <!-- OTP Box -->
+      <div style="background:linear-gradient(135deg,#E8F5E9 0%,#C8E6C9 100%);
+                  border:2.5px solid #2E7D32;border-radius:16px;
+                  padding:28px 20px;margin-bottom:28px;">
+        <p style="font-size:52px;font-weight:900;letter-spacing:16px;
+                  color:#1B5E20;margin:0;font-family:'Courier New',Courier,monospace;
+                  line-height:1;">
+          ${otp}
+        </p>
+      </div>
+
+      <!-- Expiry -->
+      <div style="background:#FFF8E1;border:1.5px solid #FFE082;border-radius:12px;
+                  padding:12px 16px;margin-bottom:20px;">
+        <p style="color:#F57F17;font-size:14px;font-weight:700;margin:0;">
+          ⏱️ This code expires in <strong>10 minutes</strong>
+        </p>
+      </div>
+
+      <!-- Warning -->
+      <p style="color:#9BA8A0;font-size:13px;line-height:1.7;margin:0;">
+        ${footerMsg}<br/>
+        Never share this code with anyone.
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <p style="text-align:center;color:#9BA8A0;font-size:12px;margin-top:20px;line-height:1.6;">
+      © ${new Date().getFullYear()} AgriConnection · Connecting Farmers to Opportunities 🌱<br/>
+      <a href="#" style="color:#9BA8A0;">Unsubscribe</a>
+    </p>
+  </div>
+</body>
+</html>`;
 }
 
-// POST — generate & send OTP
+function buildEmailText(otp, userName, isSignup) {
+  const firstName = userName ? userName.split(" ")[0] : "there";
+  return isSignup
+    ? `Hello ${firstName},\n\nWelcome to AgriConnection.\n\nYour verification code is:\n\n${otp}\n\nThis code expires in 10 minutes.\n\nIf you did not create an account, ignore this email.\n\nAgriConnection Team`
+    : `Hello ${firstName},\n\nYour AgriConnection password reset code is:\n\n${otp}\n\nThis code expires in 10 minutes.\n\nIf you did not request this, ignore this email.\n\nAgriConnection Team`;
+}
+
+async function sendEmailWithResend(to, subject, html, text) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.warn("[OTP] RESEND_API_KEY not set — email not sent");
+    return { success: false, reason: "no_api_key" };
+  }
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: "AgriConnection <onboarding@resend.dev>",
+        to: [to],
+        subject,
+        html,
+        text,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      console.error("[OTP] Resend error:", data);
+      return { success: false, reason: data.message || "send_failed" };
+    }
+    return { success: true, id: data.id };
+  } catch (err) {
+    console.error("[OTP] Email send exception:", err.message);
+    return { success: false, reason: err.message };
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// POST — Generate & send OTP
+// ═══════════════════════════════════════════════════════════
 export async function POST(request) {
   try {
-    const { email, type = "signup" } = await request.json();
+    const body = await request.json();
+    const { email, type = "signup", name: userName } = body;
 
     if (!email || !email.includes("@")) {
       return Response.json(
-        { error: "Valid email address required" },
-        { status: 400 },
+        { error: "A valid email address is required" },
+        { status: 400 }
       );
     }
 
     const emailLower = email.toLowerCase().trim();
+    const isSignup   = type === "signup";
 
-    // For reset: only send if account exists
+    // For password reset: silently succeed if account doesn't exist (security)
     if (type === "reset") {
-      const users =
-        await sql`SELECT id FROM auth_users WHERE email = ${emailLower} LIMIT 1`;
+      const users = await sql`SELECT id FROM auth_users WHERE email = ${emailLower} LIMIT 1`;
       if (users.length === 0) {
-        // Don't reveal whether account exists — still return success
         return Response.json({
           success: true,
-          message: "If this email exists, a code has been sent.",
+          message: "If an account with this email exists, a reset code has been sent.",
         });
       }
     }
 
-    // Check cooldown & resend limit
+    // Fetch user name from DB for signup (if user passed it) or from DB for reset
+    let resolvedName = userName || "";
+    if (!resolvedName && type === "reset") {
+      try {
+        const u = await sql`SELECT name FROM auth_users WHERE email = ${emailLower} LIMIT 1`;
+        resolvedName = u[0]?.name || "";
+      } catch {}
+    }
+
+    // ── Rate-limit check ──────────────────────────────────
     const existing = await sql`
-      SELECT id, resend_count, created_at FROM otp_verifications
+      SELECT id, resend_count, created_at, verify_attempts
+      FROM otp_verifications
       WHERE email = ${emailLower} AND otp_type = ${type} AND verified = false
       ORDER BY created_at DESC LIMIT 1
     `;
 
     if (existing.length > 0) {
-      const rec = existing[0];
-      const secondsSinceLast =
-        (Date.now() - new Date(rec.created_at).getTime()) / 1000;
+      const rec     = existing[0];
+      const elapsed = (Date.now() - new Date(rec.created_at).getTime()) / 1000;
 
-      if (secondsSinceLast < RESEND_COOLDOWN_SECS) {
-        const waitSecs = Math.ceil(RESEND_COOLDOWN_SECS - secondsSinceLast);
+      if (elapsed < RESEND_COOLDOWN_S) {
+        const wait = Math.ceil(RESEND_COOLDOWN_S - elapsed);
         return Response.json(
-          {
-            error: `Please wait ${waitSecs} seconds before requesting a new code.`,
-            wait_seconds: waitSecs,
-          },
-          { status: 429 },
+          { error: `Please wait ${wait} seconds before requesting a new code.`, wait_seconds: wait },
+          { status: 429 }
         );
       }
-
       if (rec.resend_count >= MAX_RESENDS) {
         return Response.json(
-          {
-            error:
-              "Maximum resend attempts reached. Please try again in 30 minutes.",
-          },
-          { status: 429 },
+          { error: "Too many code requests. Please wait 30 minutes and try again." },
+          { status: 429 }
         );
       }
     }
 
-    const otp = generateOtp();
+    // ── Generate & hash OTP ───────────────────────────────
+    const otp       = generateOtp();
+    const otpHash   = hashOtp(otp);
     const expiresAt = new Date(Date.now() + OTP_EXPIRY_MS);
-    const isSignup = type === "signup";
+    const newResendCount = existing.length > 0 ? existing[0].resend_count + 1 : 0;
+
+    // Delete old pending OTPs for this email+type
+    await sql`
+      DELETE FROM otp_verifications
+      WHERE email = ${emailLower} AND otp_type = ${type} AND verified = false
+    `;
+
+    // Store hashed OTP
+    await sql`
+      INSERT INTO otp_verifications
+        (email, otp_hash, otp_type, expires_at, resend_count, user_name)
+      VALUES
+        (${emailLower}, ${otpHash}, ${type}, ${expiresAt}, ${newResendCount}, ${resolvedName || null})
+    `;
+
+    // ── Send email ────────────────────────────────────────
     const subject = isSignup
-      ? "Your AgriConnection Verification Code"
-      : "Reset Your AgriConnection Password";
+      ? "AgriConnection Verification Code"
+      : "AgriConnection Password Reset Code";
 
-    // Clean old OTPs for this email+type and insert new one (parallel with email send)
-    await Promise.all([
-      sql`
-        DELETE FROM otp_verifications
-        WHERE email = ${emailLower} AND otp_type = ${type} AND verified = false
-      `.then(
-        () =>
-          sql`
-          INSERT INTO otp_verifications (email, otp_code, otp_type, expires_at, resend_count)
-          VALUES (${emailLower}, ${otp}, ${type}, ${expiresAt},
-            ${existing.length > 0 ? existing[0].resend_count + 1 : 0})
-        `,
-      ),
-      sendEmail({
-        to: emailLower,
-        subject,
-        html: buildEmailTemplate(otp, isSignup),
-        text: `Your AgriConnection ${isSignup ? "verification" : "password reset"} code is: ${otp}\n\nThis code expires in 5 minutes.\n\nIf you didn't request this, please ignore this email.`,
-      }).catch((err) => {
-        console.error("Email send failed:", err.message);
-        // Don't throw — we already saved OTP, can retry via resend
-      }),
-    ]);
-
-    // Also keep legacy auth_verification_token for backward compat
-    await sql`DELETE FROM auth_verification_token WHERE identifier = ${emailLower}`.catch(
-      () => {},
-    );
-    await sql`INSERT INTO auth_verification_token (identifier, token, expires) VALUES (${emailLower}, ${otp}, ${expiresAt})`.catch(
-      () => {},
+    const emailResult = await sendEmailWithResend(
+      emailLower,
+      subject,
+      buildEmailHtml(otp, resolvedName, isSignup),
+      buildEmailText(otp, resolvedName, isSignup)
     );
 
-    return Response.json({
+    const response = {
       success: true,
-      message: "Verification code sent to your email.",
-      // Only expose expiry in dev for testing
-      ...(process.env.NODE_ENV === "development" ? { otp_dev_only: otp } : {}),
-    });
+      message: emailResult.success
+        ? "Verification code sent to your email. Check your inbox (and spam folder)."
+        : "Code generated. Email may be delayed — check spam or use the code below.",
+    };
+
+    // Always expose OTP when email fails; also in dev mode
+    if (!emailResult.success || process.env.NODE_ENV !== "production") {
+      response.otp_dev = otp;
+      response.note = "otp_dev is shown because email sending failed or app is in dev mode";
+    }
+
+    return Response.json(response);
   } catch (err) {
-    console.error("POST /api/auth/send-otp error:", err);
+    console.error("[OTP POST] Error:", err);
     return Response.json(
       { error: "Failed to send verification code. Please try again." },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
-// PUT — verify OTP
+// ═══════════════════════════════════════════════════════════
+// PUT — Verify OTP
+// ═══════════════════════════════════════════════════════════
 export async function PUT(request) {
   try {
     const { email, otp, type = "signup" } = await request.json();
 
     if (!email || !otp) {
       return Response.json(
-        { error: "Email and code are required" },
-        { status: 400 },
+        { error: "Email and verification code are required" },
+        { status: 400 }
       );
     }
 
     const emailLower = email.toLowerCase().trim();
-    const otpClean = String(otp).trim();
+    const otpClean   = String(otp).trim().replace(/\s/g, "");
 
-    // Get current OTP record
+    if (otpClean.length !== 6 || !/^\d{6}$/.test(otpClean)) {
+      return Response.json(
+        { error: "Verification code must be exactly 6 digits" },
+        { status: 400 }
+      );
+    }
+
+    // Get the latest unverified record
     const rows = await sql`
-      SELECT id, otp_code, expires_at, verified, verify_attempts
+      SELECT id, otp_hash, expires_at, verified, verify_attempts
       FROM otp_verifications
       WHERE email = ${emailLower} AND otp_type = ${type} AND verified = false
       ORDER BY created_at DESC LIMIT 1
@@ -189,82 +291,75 @@ export async function PUT(request) {
 
     if (rows.length === 0) {
       return Response.json(
-        {
-          error: "No active verification code found. Please request a new one.",
-        },
-        { status: 400 },
+        { error: "No active verification code found. Please request a new one." },
+        { status: 400 }
       );
     }
 
-    const record = rows[0];
+    const rec = rows[0];
 
-    // Check max attempts
-    if (record.verify_attempts >= MAX_VERIFY_ATTEMPTS) {
-      await sql`DELETE FROM otp_verifications WHERE id = ${record.id}`;
+    // ── Too many attempts ─────────────────────────────────
+    if (rec.verify_attempts >= MAX_VERIFY_ATTS) {
+      await sql`DELETE FROM otp_verifications WHERE id = ${rec.id}`;
       return Response.json(
-        {
-          error: "Too many incorrect attempts. Please request a new code.",
-          max_attempts: true,
-        },
-        { status: 429 },
+        { error: "Too many incorrect attempts. Please request a new code.", max_attempts: true },
+        { status: 429 }
       );
     }
 
-    // Check expiry
-    if (new Date() > new Date(record.expires_at)) {
+    // ── Expired ───────────────────────────────────────────
+    if (new Date() > new Date(rec.expires_at)) {
       return Response.json(
-        {
-          error: "This code has expired. Please request a new one.",
-          expired: true,
-        },
-        { status: 400 },
+        { error: "This code has expired. Please click 'Resend' to get a new one.", expired: true },
+        { status: 400 }
       );
     }
 
-    // Wrong code — increment attempts
-    if (record.otp_code !== otpClean) {
+    // ── Wrong code ────────────────────────────────────────
+    if (!verifyOtp(otpClean, rec.otp_hash)) {
       await sql`
-        UPDATE otp_verifications SET verify_attempts = verify_attempts + 1 WHERE id = ${record.id}
+        UPDATE otp_verifications
+        SET verify_attempts = verify_attempts + 1
+        WHERE id = ${rec.id}
       `;
-      const remaining = MAX_VERIFY_ATTEMPTS - (record.verify_attempts + 1);
+      const remaining = MAX_VERIFY_ATTS - (rec.verify_attempts + 1);
       return Response.json(
         {
-          error: `Invalid code. ${remaining > 0 ? `${remaining} attempt${remaining === 1 ? "" : "s"} remaining.` : "No attempts remaining."}`,
-          remaining_attempts: remaining,
+          error: `Incorrect code. ${remaining > 0 ? `${remaining} attempt${remaining === 1 ? "" : "s"} remaining.` : "No attempts remaining — request a new code."}`,
+          remaining_attempts: Math.max(0, remaining),
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
-    // ✅ Correct — mark verified
-    await sql`UPDATE otp_verifications SET verified = true WHERE id = ${record.id}`;
-    // Clean up legacy token
-    await sql`DELETE FROM auth_verification_token WHERE identifier = ${emailLower}`.catch(
-      () => {},
-    );
+    // ── Correct ───────────────────────────────────────────
+    await sql`UPDATE otp_verifications SET verified = true WHERE id = ${rec.id}`;
 
     return Response.json({ valid: true, verified: true });
   } catch (err) {
-    console.error("PUT /api/auth/send-otp error:", err);
+    console.error("[OTP PUT] Error:", err);
     return Response.json(
       { error: "Verification failed. Please try again." },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
-// GET — check OTP status (for polling)
+// ═══════════════════════════════════════════════════════════
+// GET — Check OTP status (for countdown timer)
+// ═══════════════════════════════════════════════════════════
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const email = searchParams.get("email");
-    const type = searchParams.get("type") || "signup";
+    const type  = searchParams.get("type") || "signup";
 
-    if (!email)
-      return Response.json({ error: "email required" }, { status: 400 });
+    if (!email) {
+      return Response.json({ error: "email parameter required" }, { status: 400 });
+    }
 
     const rows = await sql`
-      SELECT id, expires_at, resend_count, verify_attempts, verified
+      SELECT expires_at, resend_count, verify_attempts, verified
       FROM otp_verifications
       WHERE email = ${email.toLowerCase()} AND otp_type = ${type}
       ORDER BY created_at DESC LIMIT 1
@@ -272,23 +367,21 @@ export async function GET(request) {
 
     if (rows.length === 0) return Response.json({ exists: false });
 
-    const rec = rows[0];
-    const now = new Date();
-    const expired = now > new Date(rec.expires_at);
-    const secondsLeft = Math.max(
-      0,
-      Math.floor((new Date(rec.expires_at) - now) / 1000),
-    );
+    const rec       = rows[0];
+    const now       = new Date();
+    const expired   = now > new Date(rec.expires_at);
+    const secsLeft  = Math.max(0, Math.floor((new Date(rec.expires_at) - now) / 1000));
 
     return Response.json({
-      exists: true,
-      verified: rec.verified,
+      exists:          true,
+      verified:        rec.verified,
       expired,
-      seconds_left: secondsLeft,
-      resend_count: rec.resend_count,
+      seconds_left:    secsLeft,
+      resend_count:    rec.resend_count,
       verify_attempts: rec.verify_attempts,
     });
   } catch (err) {
+    console.error("[OTP GET] Error:", err);
     return Response.json({ error: "Server error" }, { status: 500 });
   }
 }

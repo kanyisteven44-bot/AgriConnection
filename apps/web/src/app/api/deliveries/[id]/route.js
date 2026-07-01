@@ -9,10 +9,13 @@ export async function GET(request, { params }) {
     }
 
     const { id } = params; // order_id
+
+    // Fix: JOIN auth_users (not the non-existent 'users' table)
     const rows = await sql`
       SELECT d.*, o.product_id, o.quantity, o.total_price, o.status as order_status,
              p.name as product_name, p.image_url,
-             u.name as transporter_name, u.phone as transporter_phone, u.profile_photo as transporter_photo,
+             u.name as transporter_name, u.phone as transporter_phone, 
+             u.profile_photo as transporter_photo,
              v.vehicle_type, v.capacity
       FROM deliveries d
       JOIN orders o ON d.order_id = o.id
@@ -24,12 +27,12 @@ export async function GET(request, { params }) {
     `;
 
     if (rows.length === 0) {
-      // Verify the order exists first
-      const orderRows =
-        await sql`SELECT id FROM orders WHERE id = ${id} LIMIT 1`;
+      // Verify the order exists
+      const orderRows = await sql`SELECT id FROM orders WHERE id = ${id} LIMIT 1`;
       if (orderRows.length === 0) {
         return Response.json({ error: "Order not found" }, { status: 404 });
       }
+      // Create a pending delivery
       const newDelivs = await sql`
         INSERT INTO deliveries (order_id, status, pickup_location, dropoff_location)
         VALUES (${id}, 'pending', 'Farm Location', 'Delivery Address')

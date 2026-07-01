@@ -1,15 +1,19 @@
-import { neon } from '@neondatabase/serverless';
+import { neon } from "@neondatabase/serverless";
 
-const NullishQueryFunction = () => {
-  throw new Error(
-    'No database connection string was provided to `neon()`. Perhaps process.env.DATABASE_URL has not been set'
+// Use Neon DB URL (primary) or Supabase DB URL (fallback)
+const dbUrl =
+  process.env.DATABASE_URL ||
+  process.env.SUPABASE_DB_URL;
+
+function NullishQueryFunction(..._args) {
+  console.error(
+    "[sql] No database connection string found. Set DATABASE_URL environment variable."
   );
-};
-NullishQueryFunction.transaction = () => {
-  throw new Error(
-    'No database connection string was provided to `neon()`. Perhaps process.env.DATABASE_URL has not been set'
-  );
-};
-const sql = process.env.DATABASE_URL ? neon(process.env.DATABASE_URL) : NullishQueryFunction;
+  return Promise.resolve([]);
+}
+NullishQueryFunction.transaction = () =>
+  Promise.reject(new Error("No database connection string configured."));
+
+const sql = dbUrl ? neon(dbUrl) : NullishQueryFunction;
 
 export default sql;

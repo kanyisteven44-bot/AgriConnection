@@ -1,8 +1,11 @@
 import { Tabs } from "expo-router";
-import { Home, ShoppingBag, Users, User, Brain } from "lucide-react-native";
-import { View } from "react-native";
+import { Hop as Home, ShoppingBag, Users, User, Brain } from "lucide-react-native";
+import { View, Text, Platform } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TabLayout() {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tabs
       screenOptions={{
@@ -11,6 +14,8 @@ export default function TabLayout() {
           backgroundColor: "white",
           borderTopWidth: 0,
           paddingTop: 6,
+          height: 60 + (Platform.OS === "ios" ? insets.bottom : 8),
+          paddingBottom: Platform.OS === "ios" ? insets.bottom : 8,
           shadowColor: "#000",
           shadowOffset: { width: 0, height: -4 },
           shadowOpacity: 0.1,
@@ -41,16 +46,16 @@ export default function TabLayout() {
         options={{
           title: "",
           tabBarLabel: () => null,
-          tabBarIcon: () => (
+          tabBarIcon: ({ focused }) => (
             <View
               style={{
                 width: 58,
                 height: 58,
                 borderRadius: 29,
-                backgroundColor: "#2E7D32",
+                backgroundColor: focused ? "#1B5E20" : "#2E7D32",
                 justifyContent: "center",
                 alignItems: "center",
-                marginBottom: 22,
+                marginBottom: Platform.OS === "ios" ? 16 : 22,
                 shadowColor: "#2E7D32",
                 shadowOffset: { width: 0, height: 6 },
                 shadowOpacity: 0.5,
@@ -59,6 +64,16 @@ export default function TabLayout() {
               }}
             >
               <Brain size={26} color="white" />
+              <Text
+                style={{
+                  color: "rgba(255,255,255,0.8)",
+                  fontSize: 8,
+                  fontWeight: "700",
+                  marginTop: 1,
+                }}
+              >
+                AI
+              </Text>
             </View>
           ),
         }}
@@ -77,6 +92,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <User size={22} color={color} />,
         }}
       />
+      {/* Hidden screens - accessible via navigation but not shown as tabs */}
       <Tabs.Screen name="upload" options={{ href: null }} />
       <Tabs.Screen name="notifications" options={{ href: null }} />
     </Tabs>

@@ -1,5 +1,6 @@
 export function RecentOrders({ recentOrders }) {
-  const orders = recentOrders || [];
+  const orders = Array.isArray(recentOrders) ? recentOrders : [];
+
   if (orders.length === 0) {
     return <p className="text-[#9BA8A0] text-sm">No orders yet.</p>;
   }

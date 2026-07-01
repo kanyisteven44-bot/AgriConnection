@@ -11,6 +11,7 @@ function MainComponent() {
   const [mode, setMode] = useState("login");
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotOtp, setForgotOtp] = useState("");
+  const [devOtp, setDevOtp] = useState(null);
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [otpSending, setOtpSending] = useState(false);
@@ -54,6 +55,7 @@ function MainComponent() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
+      if (data.otp_dev) setDevOtp(data.otp_dev);
       setMode("otp");
     } catch (err) {
       setError(err.message || "Failed to send code");
@@ -331,6 +333,19 @@ function MainComponent() {
                   maxLength={6}
                   className="w-full px-4 py-5 rounded-2xl border border-[#C5D8C5] focus:outline-none focus:ring-2 focus:ring-[#4CAF50] bg-white font-black text-center text-3xl tracking-[12px]"
                 />
+                {devOtp && (
+                  <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-xl text-center">
+                    <p className="text-xs font-bold text-yellow-700 mb-1">
+                      📧 Dev mode — use this code:
+                    </p>
+                    <p
+                      className="text-2xl font-black text-yellow-800 tracking-[8px] cursor-pointer hover:opacity-70"
+                      onClick={() => setForgotOtp(devOtp)}
+                    >
+                      {devOtp}
+                    </p>
+                  </div>
+                )}
                 {error && (
                   <div className="bg-red-50 text-red-600 p-3 rounded-2xl text-sm border border-red-100 flex gap-2">
                     <span>⚠️</span>

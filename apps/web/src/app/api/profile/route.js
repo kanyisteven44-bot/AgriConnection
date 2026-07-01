@@ -29,13 +29,15 @@ export async function GET() {
     // Fetch additional info based on role
     let additionalInfo = {};
     if (user.role === "farmer") {
-      const farms =
-        await sql`SELECT * FROM farms WHERE farmer_id = ${userId} LIMIT 1`;
-      additionalInfo.farm = farms[0] || null;
+      try {
+        const farms = await sql`SELECT * FROM farms WHERE farmer_id = ${userId} LIMIT 1`;
+        additionalInfo.farm = farms[0] || null;
+      } catch {}
     } else if (user.role === "transporter") {
-      const vehicles =
-        await sql`SELECT * FROM vehicles WHERE transporter_id = ${userId} LIMIT 1`;
-      additionalInfo.vehicle = vehicles[0] || null;
+      try {
+        const vehicles = await sql`SELECT * FROM vehicles WHERE transporter_id = ${userId} LIMIT 1`;
+        additionalInfo.vehicle = vehicles[0] || null;
+      } catch {}
     }
 
     return Response.json({ user, ...additionalInfo });
@@ -56,69 +58,79 @@ export async function PUT(request) {
     const body = await request.json();
     const { name, role, phone, location, profile_photo, farm, vehicle } = body;
 
-    // Update auth_users
-    const setClauses = [];
+    // Build dynamic UPDATE query
+    const fields = [];
     const values = [];
 
-    if (name) {
-      setClauses.push(`name = $${values.length + 1}`);
+    if (name !== undefined) {
+      fields.push(`name = $${values.length + 1}`);
       values.push(name);
     }
-    if (role) {
-      setClauses.push(`role = $${values.length + 1}`);
+    if (role !== undefined) {
+      fields.push(`role = $${values.length + 1}`);
       values.push(role);
     }
-    if (phone) {
-      setClauses.push(`phone = $${values.length + 1}`);
+    if (phone !== undefined) {
+      fields.push(`phone = $${values.length + 1}`);
       values.push(phone);
     }
-    if (location) {
-      setClauses.push(`location = $${values.length + 1}`);
+    if (location !== undefined) {
+      fields.push(`location = $${values.length + 1}`);
       values.push(location);
     }
-    if (profile_photo) {
-      setClauses.push(`profile_photo = $${values.length + 1}`);
+    if (profile_photo !== undefined) {
+      fields.push(`profile_photo = $${values.length + 1}`);
       values.push(profile_photo);
     }
 
-    if (setClauses.length > 0) {
-      const query = `UPDATE auth_users SET ${setClauses.join(", ")} WHERE id = $${values.length + 1}`;
+    if (fields.length > 0) {
+      const query = `UPDATE auth_users SET ${fields.join(", ")}, updated_at = NOW() WHERE id = $${values.length + 1}`;
       await sql(query, [...values, userId]);
     }
 
     // Handle Farmer additional info
     if (role === "farmer" && farm) {
-      const existingFarm =
-        await sql`SELECT id FROM farms WHERE farmer_id = ${userId}`;
-      if (existingFarm.length > 0) {
-        await sql`
-          UPDATE farms 
-          SET size = ${farm.size}, location = ${farm.location}, crops_grown = ${farm.crops_grown}, livestock_info = ${farm.livestock_info}
-          WHERE farmer_id = ${userId}
-        `;
-      } else {
-        await sql`
-          INSERT INTO farms (farmer_id, size, location, crops_grown, livestock_info)
-          VALUES (${userId}, ${farm.size}, ${farm.location}, ${farm.crops_grown}, ${farm.livestock_info})
-        `;
+      try {
+        const existingFarm = await sql`SELECT id FROM farms WHERE farmer_id = ${userId}`;
+        if (existingFarm.length > 0) {
+          await sql`
+            UPDATE farms 
+            SET size = ${farm.size || null}, location = ${farm.location || null}, 
+                crops_grown = ${farm.crops_grown || null}, livestock_info = ${farm.livestock_info || null}
+            WHERE farmer_id = ${userId}
+          `;
+        } else {
+          await sql`
+            INSERT INTO farms (farmer_id, size, location, crops_grown, livestock_info)
+            VALUES (${userId}, ${farm.size || null}, ${farm.location || null}, 
+                    ${farm.crops_grown || null}, ${farm.livestock_info || null})
+          `;
+        }
+      } catch (e) {
+        console.error("Farm update error:", e);
       }
     }
 
     // Handle Transporter additional info
     if (role === "transporter" && vehicle) {
-      const existingVehicle =
-        await sql`SELECT id FROM vehicles WHERE transporter_id = ${userId}`;
-      if (existingVehicle.length > 0) {
-        await sql`
-          UPDATE vehicles 
-          SET vehicle_type = ${vehicle.vehicle_type}, capacity = ${vehicle.capacity}, current_location = ${vehicle.current_location}
-          WHERE transporter_id = ${userId}
-        `;
-      } else {
-        await sql`
-          INSERT INTO vehicles (transporter_id, vehicle_type, capacity, current_location)
-          VALUES (${userId}, ${vehicle.vehicle_type}, ${vehicle.capacity}, ${vehicle.current_location})
-        `;
+      try {
+        const existingVehicle = await sql`SELECT id FROM vehicles WHERE transporter_id = ${userId}`;
+        if (existingVehicle.length > 0) {
+          await sql`
+            UPDATE vehicles 
+            SET vehicle_type = ${vehicle.vehicle_type || null}, capacity = ${vehicle.capacity || null}, 
+                current_location = ${vehicle.current_location || null}
+            WHERE transporter_id = ${userId}
+          `;
+        } else {
+          await sql`
+            INSERT INTO vehicles (transporter_id, vehicle_type, capacity, current_location)
+            VALUES (${userId}, ${vehicle.vehicle_type || null}, ${vehicle.capacity || null}, 
+                    ${vehicle.current_location || null})
+          `;
+        }
+      } catch (e) {
+        console.error("Vehicle update error:", e);
       }
     }
 

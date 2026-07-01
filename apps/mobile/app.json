@@ -1,27 +1,45 @@
 {
   "expo": {
-    "name": "Anything mobile app",
+    "name": "AgriConnection",
+    "slug": "agriconnection",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
+    "scheme": "agriconnection",
     "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1B5E20"
+    },
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "com.agriconnection.app",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSLocationWhenInUseUsageDescription": "AgriConnection uses your location to show nearby farmers and weather for your area.",
+        "NSLocationAlwaysUsageDescription": "AgriConnection uses your location for GPS weather.",
+        "NSMicrophoneUsageDescription": "AgriConnection needs microphone access for voice AI advisor.",
+        "NSCameraUsageDescription": "AgriConnection needs camera access to upload plant photos for disease detection.",
+        "NSPhotoLibraryUsageDescription": "AgriConnection needs photo library access to upload farm photos."
       }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#1B5E20"
       },
+      "package": "com.agriconnection.app",
       "permissions": [
         "android.permission.RECORD_AUDIO",
-        "android.permission.MODIFY_AUDIO_SETTINGS"
-      ],
-      "package": "xyz.create.CreateExpoEnvironment"
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "plugins": [
       [
@@ -35,7 +53,8 @@
         {
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
-          "resizeMode": "contain"
+          "resizeMode": "contain",
+          "backgroundColor": "#1B5E20"
         }
       ],
       "expo-audio",
@@ -57,7 +76,8 @@
     ],
     "web": {
       "bundler": "metro",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "name": "AgriConnection"
     },
     "experiments": {
       "typedRoutes": true

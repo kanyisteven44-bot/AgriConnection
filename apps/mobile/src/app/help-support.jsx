@@ -11,15 +11,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useState, useRef, useCallback } from "react";
 import { useRouter } from "expo-router";
-import {
-  ArrowLeft,
-  MessageCircle,
-  Phone,
-  Send,
-  HelpCircle,
-  Brain,
-  ChevronRight,
-} from "lucide-react-native";
+import { ArrowLeft, Phone, Send, Circle as HelpCircle, Brain, ChevronRight } from "lucide-react-native";
 import KeyboardAvoidingAnimatedView from "@/components/KeyboardAvoidingAnimatedView";
 
 const CUSTOMER_CARE = "0117499067";
@@ -68,7 +60,7 @@ export default function HelpSupport() {
 
   const callSupport = () => {
     Linking.openURL(`tel:${CUSTOMER_CARE}`).catch(() =>
-      Alert.alert("Cannot make call", `Please call us at ${CUSTOMER_CARE}`),
+      Alert.alert("Cannot make call", `Please call us at ${CUSTOMER_CARE}`)
     );
   };
 
@@ -102,7 +94,10 @@ Keep responses concise and friendly. Use bullet points when listing steps.`,
             ],
           }),
         });
+
+        // Fix: check res.ok before parsing JSON
         if (!res.ok) throw new Error(`API error: ${res.status}`);
+
         const data = await res.json();
         const reply =
           data?.choices?.[0]?.message?.content ||
@@ -121,11 +116,11 @@ Keep responses concise and friendly. Use bullet points when listing steps.`,
         setLoading(false);
         setTimeout(
           () => scrollRef.current?.scrollToEnd({ animated: true }),
-          100,
+          100
         );
       }
     },
-    [input, messages],
+    [input, messages]
   );
 
   return (
