@@ -92,7 +92,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <User size={22} color={color} />,
         }}
       />
-      {/* Hidden screens - accessible via navigation but not shown as tabs */}
       <Tabs.Screen name="upload" options={{ href: null }} />
       <Tabs.Screen name="notifications" options={{ href: null }} />
     </Tabs>
