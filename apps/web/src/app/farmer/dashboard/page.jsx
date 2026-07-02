@@ -139,10 +139,10 @@ function FarmerDashboard() {
 
       {/* Main Content */}
       <main className="flex-1 p-8 md:p-12 overflow-y-auto">
-        <header className="flex flex-col md:row justify-between items-start md:items-center mb-16 space-y-6 md:space-y-0">
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 space-y-6 md:space-y-0">
           <div>
             <h1 className="text-4xl font-black text-[#333333] tracking-tight">
-              Good Morning, {user.name}!
+              Good Morning, {user?.name || "Farmer"}!
             </h1>
             <p className="text-[#6B8E6B] mt-2 font-medium">
               Optimize your farm operations with real-time insights.
@@ -156,19 +156,23 @@ function FarmerDashboard() {
               </button>
             </div>
             <div className="flex items-center space-x-4 bg-white p-2 pr-6 rounded-2xl shadow-xl border border-[#E8EEE5]">
-              <img
-                src={
-                  profile?.user?.profile_photo ||
-                  "https://via.placeholder.com/150"
-                }
-                className="w-12 h-12 rounded-xl object-cover shadow-inner"
-              />
+              {profile?.user?.profile_photo ? (
+                <img
+                  src={profile.user.profile_photo}
+                  alt="Profile"
+                  className="w-12 h-12 rounded-xl object-cover shadow-inner"
+                />
+              ) : (
+                <div className="w-12 h-12 rounded-xl bg-[#2E7D32] flex items-center justify-center text-white font-black text-lg shadow-inner">
+                  {(user?.name || "F")[0].toUpperCase()}
+                </div>
+              )}
               <div>
                 <p className="text-sm font-black text-[#333333] leading-none">
-                  {user.name}
+                  {user?.name || "Farmer"}
                 </p>
                 <p className="text-[10px] font-bold text-[#6B8E6B] uppercase tracking-wider mt-1">
-                  {user.role}
+                  {user?.role || "farmer"}
                 </p>
               </div>
             </div>
@@ -231,7 +235,7 @@ function FarmerDashboard() {
             {/* Weather & Recommendations */}
             <div className="bg-[#2E7D32] rounded-[48px] p-10 text-white shadow-2xl relative overflow-hidden group">
               <div className="absolute -right-20 -top-20 w-80 h-80 bg-white/5 rounded-full blur-[100px] group-hover:scale-125 transition-transform duration-[2s]"></div>
-              <div className="relative z-10 flex flex-col md:row justify-between">
+              <div className="relative z-10 flex flex-col md:flex-row justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-8">
                     <div className="bg-[#FBC02D] p-3 rounded-2xl text-[#2E7D32]">

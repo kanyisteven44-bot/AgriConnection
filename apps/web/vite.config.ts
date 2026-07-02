@@ -40,11 +40,14 @@ export default defineConfig({
       runtime: 'node',
     }),
     babel({
-      include: ['src/**/*.{js,jsx,ts,tsx}'], // or RegExp: /src\/.*\.[tj]sx?$/
-      exclude: /node_modules/, // skip everything else
+      include: /src\/.*\.[jt]sx?$/,
+      exclude: /node_modules/,
       babelConfig: {
-        babelrc: false, // don’t merge other Babel files
+        babelrc: false,
         configFile: false,
+        presets: [
+          ['@babel/preset-typescript', { isTSX: true, allExtensions: true }],
+        ],
         plugins: ['styled-jsx/babel'],
       },
     }),
@@ -81,7 +84,7 @@ export default defineConfig({
   server: {
     allowedHosts: true,
     host: '0.0.0.0',
-    port: 4000,
+    port: 5000,
     fs: {
       allow: ['..', '../../shared'],
     },

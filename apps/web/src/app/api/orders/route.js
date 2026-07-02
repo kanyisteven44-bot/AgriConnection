@@ -10,7 +10,6 @@ export async function GET() {
 
     const userId = session.user.id;
 
-    // Check if user is buyer or seller
     const userRows =
       await sql`SELECT role FROM auth_users WHERE id = ${userId}`;
     const role = userRows[0]?.role;
@@ -53,6 +52,10 @@ export async function POST(request) {
     const body = await request.json();
     const { product_id, quantity, payment_method } = body;
 
+    if (!product_id || !quantity || quantity < 1) {
+      return Response.json({ error: "Invalid order data" }, { status: 400 });
+    }
+
     const productRows =
       await sql`SELECT price, quantity as stock FROM products WHERE id = ${product_id}`;
     if (productRows.length === 0)
@@ -66,13 +69,23 @@ export async function POST(request) {
 
     const orderRows = await sql`
       INSERT INTO orders (buyer_id, product_id, quantity, total_price, payment_method)
-      VALUES (${session.user.id}, ${product_id}, ${quantity}, ${total_price}, ${payment_method})
+      VALUES (${session.user.id}, ${product_id}, ${quantity}, ${total_price}, ${payment_method || "mpesa"})
       RETURNING *
     `;
 
-    await sql`
-      UPDATE products SET quantity = quantity - ${quantity} WHERE id = ${product_id}
+    // Atomic decrement: only subtract if stock is still sufficient (prevents race condition)
+    const updated = await sql`
+      UPDATE products 
+      SET quantity = quantity - ${quantity} 
+      WHERE id = ${product_id} AND quantity >= ${quantity}
+      RETURNING id
     `;
+
+    if (updated.length === 0) {
+      // Stock was depleted between our check and update — cancel the order
+      await sql`DELETE FROM orders WHERE id = ${orderRows[0].id}`;
+      return Response.json({ error: "Insufficient stock" }, { status: 400 });
+    }
 
     return Response.json({ order: orderRows[0] });
   } catch (err) {

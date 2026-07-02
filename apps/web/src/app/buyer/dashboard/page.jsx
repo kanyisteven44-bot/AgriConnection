@@ -86,10 +86,17 @@ function BuyerDashboard() {
             >
               Shop Now
             </a>
-            <img
-              src={userData.user.image || "https://via.placeholder.com/150"}
-              className="w-14 h-14 rounded-2xl object-cover shadow-md border-2 border-white"
-            />
+            {userData?.user?.image ? (
+              <img
+                src={userData.user.image}
+                alt="Profile"
+                className="w-14 h-14 rounded-2xl object-cover shadow-md border-2 border-white"
+              />
+            ) : (
+              <div className="w-14 h-14 rounded-2xl bg-[#2E4D2E] border-2 border-white flex items-center justify-center text-white font-black text-xl shadow-md">
+                {(userData?.user?.name || "B")[0].toUpperCase()}
+              </div>
+            )}
           </div>
         </header>
 
@@ -144,8 +151,10 @@ function BuyerDashboard() {
                     <div className="flex items-center space-x-3">
                       <img
                         src={
-                          order.image_url || "https://via.placeholder.com/150"
+                          order.image_url ||
+                          "https://images.unsplash.com/photo-1518843875459-f738682238a6?w=80&q=60"
                         }
+                        alt={order.product_name}
                         className="w-10 h-10 rounded-lg object-cover"
                       />
                       <span className="font-medium text-[#2E4D2E]">

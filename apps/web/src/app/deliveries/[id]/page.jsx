@@ -225,7 +225,7 @@ function DeliveryTrackingPage({ params }) {
             <h3 className="text-xl font-black mb-6">Product Details</h3>
             <div className="flex items-center space-x-6">
               <img
-                src={delivery?.image_url || "https://via.placeholder.com/80"}
+                src={delivery?.image_url || "https://images.unsplash.com/photo-1518843875459-f738682238a6?w=80&q=60"}
                 className="w-20 h-20 rounded-2xl object-cover"
               />
               <div>

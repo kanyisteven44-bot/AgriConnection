@@ -113,10 +113,17 @@ function MarketplacePage() {
             </span>
           </div>
           {user ? (
-            <img
-              src={user.image || "https://via.placeholder.com/100"}
-              className="w-12 h-12 rounded-2xl border-4 border-white/10 shadow-lg object-cover"
-            />
+            user.image ? (
+              <img
+                src={user.image}
+                alt="Profile"
+                className="w-12 h-12 rounded-2xl border-4 border-white/10 shadow-lg object-cover"
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-2xl bg-white/20 border-4 border-white/10 flex items-center justify-center text-white font-black text-lg shadow-lg">
+                {(user.name || "U")[0].toUpperCase()}
+              </div>
+            )
           ) : (
             <a
               href="/account/signin"
@@ -211,7 +218,7 @@ function MarketplacePage() {
                     <img
                       src={
                         product.image_url ||
-                        "https://via.placeholder.com/400x300"
+                        "https://images.unsplash.com/photo-1518843875459-f738682238a6?w=400&q=70"
                       }
                       className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700"
                     />
