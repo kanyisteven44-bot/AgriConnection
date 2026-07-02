@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriConnection Mobile - Expo Go</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 50%, #43A047 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 32px;
+      padding: 48px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .logo-icon {
+      width: 60px;
+      height: 60px;
+      background: #2E7D32;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+    }
+    .logo-text {
+      font-size: 24px;
+      font-weight: 900;
+      color: #2E7D32;
+      letter-spacing: -1px;
+    }
+    h1 {
+      font-size: 28px;
+      color: #1A1A1A;
+      margin-bottom: 12px;
+      font-weight: 900;
+    }
+    .subtitle {
+      color: #6B7280;
+      font-size: 16px;
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+    .qr-container {
+      background: #F5F7FA;
+      padding: 32px;
+      border-radius: 24px;
+      margin-bottom: 24px;
+      display: inline-block;
+      border: 3px solid #E8F5E9;
+    }
+    #qrcode canvas {
+      border-radius: 16px;
+    }
+    .steps {
+      text-align: left;
+      background: #F5F7FA;
+      padding: 24px;
+      border-radius: 16px;
+      margin-top: 24px;
+    }
+    .steps h3 {
+      font-size: 14px;
+      color: #2E7D32;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+    }
+    .step {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      align-items: flex-start;
+    }
+    .step-number {
+      width: 28px;
+      height: 28px;
+      background: #2E7D32;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .step-text {
+      font-size: 14px;
+      color: #333;
+      line-height: 1.5;
+      padding-top: 4px;
+    }
+    .btn {
+      display: inline-block;
+      background: #2E7D32;
+      color: white;
+      padding: 14px 36px;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.3s;
+      margin: 8px;
+    }
+    .btn:hover {
+      background: #1B5E20;
+      transform: translateY(-2px);
+    }
+    .btn-secondary {
+      background: #F5F7FA;
+      color: #2E7D32;
+      border: 2px solid #2E7D32;
+    }
+    .download-badges {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .badge {
+      background: #1A1A1A;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .badge:hover {
+      background: #333;
+    }
+    .badge-icon {
+      font-size: 18px;
+    }
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #FFF8E1;
+      color: #F57F17;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    .note {
+      font-size: 12px;
+      color: #9CA3AF;
+      margin-top: 16px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <div class="logo-icon">🌾</div>
+      <div class="logo-text">AgriConnection</div>
+    </div>
+
+    <h1>Run on Expo Go</h1>
+    <p class="subtitle">Scan this QR code with the Expo Go app to run AgriConnection on your mobile device</p>
+
+    <div class="status">
+      Development Build Ready
+    </div>
+
+    <div class="qr-container">
+      <div id="qrcode"></div>
+    </div>
+
+    <div>
+      <a href="exp://exp.host/@anonymous/agriconnection" class="btn">Open in Expo Go</a>
+    </div>
+
+    <div class="steps">
+      <h3>How to use Expo Go</h3>
+      <div class="step">
+        <div class="step-number">1</div>
+        <div class="step-text">Download Expo Go from the App Store or Google Play</div>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <div class="step-text">Open Expo Go and create an account (free)</div>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <div class="step-text">Scan the QR code above or tap "Open in Expo Go"</div>
+      </div>
+      <div class="step">
+        <div class="step-number">4</div>
+        <div class="step-text">The app will load and you can start exploring!</div>
+      </div>
+    </div>
+
+    <div class="download-badges">
+      <a href="https://apps.apple.com/app/expo-go/id982030343" target="_blank" class="badge">
+        <span class="badge-icon">🍎</span> App Store
+      </a>
+      <a href="https://play.google.com/store/apps/details?id=host.exp.exponent" target="_blank" class="badge">
+        <span class="badge-icon">▶️</span> Play Store
+      </a>
+    </div>
+
+    <p class="note">
+      Make sure your mobile device is on the same network as this computer, or use the tunnel connection for remote access.
+    </p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <script>
+    // Generate QR code for Expo Go
+    const expoUrl = 'exp://exp.host/@anonymous/agriconnection';
+
+    QRCode.toCanvas(expoUrl, {
+      width: 200,
+      margin: 2,
+      color: {
+        dark: '#2E7D32',
+        light: '#FFFFFF'
+      }
+    }, function(error, canvas) {
+      if (error) {
+        console.error(error);
+        return;
+      }
+      document.getElementById('qrcode').appendChild(canvas);
+    });
+  </script>
+</body>
+</html>
