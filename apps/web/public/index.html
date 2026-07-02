@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriConnection - Live App</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0D3B0D 0%, #1B5E20 30%, #2E7D32 60%, #43A047 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+      color: #fff;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(255,255,255,0.1);
+      padding: 16px 32px;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      margin-bottom: 20px;
+    }
+    .logo-icon {
+      font-size: 48px;
+    }
+    .logo-text {
+      font-size: 36px;
+      font-weight: 900;
+      color: #FBC02D;
+      letter-spacing: -1px;
+    }
+    .tagline {
+      font-size: 18px;
+      color: rgba(255,255,255,0.8);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .card {
+      background: white;
+      border-radius: 24px;
+      padding: 40px;
+      text-align: center;
+      color: #1A1A1A;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .card-icon {
+      font-size: 60px;
+      margin-bottom: 20px;
+    }
+    .card h2 {
+      font-size: 28px;
+      font-weight: 900;
+      margin-bottom: 10px;
+      color: #1B5E20;
+    }
+    .card-subtitle {
+      font-size: 16px;
+      color: #6B7280;
+      margin-bottom: 30px;
+    }
+    .qr-box {
+      background: #F5F7FA;
+      padding: 24px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 24px;
+      border: 3px solid #E8F5E9;
+    }
+    .qr-box canvas {
+      border-radius: 12px;
+    }
+    .url-display {
+      background: #1B5E20;
+      color: white;
+      padding: 16px 24px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      font-family: monospace;
+      font-size: 14px;
+      word-break: break-all;
+    }
+    .url-display a {
+      color: #FBC02D;
+      text-decoration: none;
+    }
+    .url-display a:hover {
+      text-decoration: underline;
+    }
+    .btn {
+      display: inline-block;
+      background: #FBC02D;
+      color: #1A1A1A;
+      padding: 14px 32px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.3s;
+      margin: 8px;
+    }
+    .btn:hover {
+      background: #FFD54F;
+      transform: translateY(-2px);
+    }
+    .btn-dark {
+      background: #1B5E20;
+      color: white;
+    }
+    .btn-dark:hover {
+      background: #2E7D32;
+    }
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #E8F5E9;
+      color: #2E7D32;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #2E7D32;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .steps {
+      text-align: left;
+      background: #F5F7FA;
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+    .steps h3 {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #2E7D32;
+      margin-bottom: 12px;
+    }
+    .step {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 8px;
+      align-items: flex-start;
+    }
+    .step-num {
+      width: 24px;
+      height: 24px;
+      background: #2E7D32;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .download-links {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      background: #1A1A1A;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .badge:hover {
+      background: #333;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 20px;
+      text-align: center;
+    }
+    .feature-item {
+      background: #F5F7FA;
+      padding: 16px;
+      border-radius: 12px;
+    }
+    .feature-item .icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    .feature-item .name {
+      font-size: 12px;
+      font-weight: 600;
+      color: #1B5E20;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 50px;
+      padding: 30px;
+      color: rgba(255,255,255,0.7);
+      font-size: 14px;
+    }
+    @media (max-width: 768px) {
+      .cards { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <span class="logo-icon">🌾</span>
+      <span class="logo-text">AgriConnection</span>
+    </div>
+    <p class="tagline">Kenya's #1 Smart Agriculture Platform - Connecting 15,000+ farmers, buyers, and suppliers across East Africa</p>
+  </div>
+
+  <div class="cards">
+    <!-- Web App Card -->
+    <div class="card">
+      <div class="card-icon">🌐</div>
+      <h2>Web Application</h2>
+      <p class="card-subtitle">Open directly in your browser - no installation needed</p>
+
+      <div class="status">
+        <span class="status-dot"></span>
+        Running on Dev Server
+      </div>
+
+      <div class="qr-box">
+        <div id="web-qr"></div>
+      </div>
+
+      <div class="url-display">
+        <a id="web-url" href="#" target="_blank">Loading...</a>
+      </div>
+
+      <div>
+        <a id="web-btn" class="btn" href="#" target="_blank">Open Web App</a>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-item">
+          <div class="icon">🤖</div>
+          <div class="name">AI Advisor</div>
+        </div>
+        <div class="feature-item">
+          <div class="icon">🛒</div>
+          <div class="name">Marketplace</div>
+        </div>
+        <div class="feature-item">
+          <div class="icon">🌤️</div>
+          <div class="name">Weather</div>
+        </div>
+        <div class="feature-item">
+          <div class="icon">💳</div>
+          <div class="name">M-Pesa</div>
+        </div>
+        <div class="feature-item">
+          <div class="icon">📍</div>
+          <div class="name">Map</div>
+        </div>
+        <div class="feature-item">
+          <div class="icon">👥</div>
+          <div class="name">Community</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile App Card -->
+    <div class="card">
+      <div class="card-icon">📱</div>
+      <h2>Mobile App (Expo Go)</h2>
+      <p class="card-subtitle">Run the native mobile app using Expo Go</p>
+
+      <div class="status">
+        <span class="status-dot"></span>
+        Expo Project Ready
+      </div>
+
+      <div class="qr-box">
+        <div id="expo-qr"></div>
+      </div>
+
+      <div class="url-display">
+        expo://localhost:8081
+      </div>
+
+      <div>
+        <a class="btn" href="exp://localhost:8081">Open in Expo Go</a>
+      </div>
+
+      <div class="steps">
+        <h3>How to use Expo Go</h3>
+        <div class="step">
+          <div class="step-num">1</div>
+          <div>Download Expo Go from App Store or Play Store</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div>Open Expo Go and sign in (free)</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div>Scan the QR code above with Expo Go</div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div>The app loads automatically!</div>
+        </div>
+      </div>
+
+      <div class="download-links">
+        <a href="https://apps.apple.com/app/expo-go/id982030343" target="_blank" class="badge">
+          🍎 iOS App Store
+        </a>
+        <a href="https://play.google.com/store/apps/details?id=host.exp.exponent" target="_blank" class="badge">
+          ▶️ Google Play
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>© 2026 AgriConnection - Built with ❤️ for Kenyan Farmers</p>
+    <p style="margin-top: 10px; opacity: 0.7;">M-Pesa • GPS Weather • AI Advisor • Live Marketplace</p>
+  </div>
+
+  <script>
+    // Generate Web QR Code
+    const webUrl = window.location.origin;
+    document.getElementById('web-url').textContent = webUrl;
+    document.getElementById('web-url').href = webUrl;
+    document.getElementById('web-btn').href = webUrl;
+
+    QRCode.toCanvas(webUrl, {
+      width: 180,
+      margin: 2,
+      color: { dark: '#1B5E20', light: '#FFFFFF' }
+    }, function(error, canvas) {
+      if (!error) {
+        document.getElementById('web-qr').appendChild(canvas);
+      }
+    });
+
+    // Generate Expo QR Code
+    const expoUrl = 'exp://localhost:8081';
+    QRCode.toCanvas(expoUrl, {
+      width: 180,
+      margin: 2,
+      color: { dark: '#1B5E20', light: '#FFFFFF' }
+    }, function(error, canvas) {
+      if (!error) {
+        document.getElementById('expo-qr').appendChild(canvas);
+      }
+    });
+  </script>
+</body>
+</html>
