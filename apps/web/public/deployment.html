@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriConnection - Deployment Info</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 50%, #43A047 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 32px;
+      padding: 48px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .logo-icon {
+      width: 60px;
+      height: 60px;
+      background: #2E7D32;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+    }
+    .logo-text {
+      font-size: 28px;
+      font-weight: 900;
+      color: #2E7D32;
+      letter-spacing: -1px;
+    }
+    h1 {
+      font-size: 32px;
+      color: #1A1A1A;
+      margin-bottom: 16px;
+      font-weight: 900;
+    }
+    .subtitle {
+      color: #6B7280;
+      font-size: 16px;
+      margin-bottom: 32px;
+    }
+    .qr-container {
+      background: #F5F7FA;
+      padding: 32px;
+      border-radius: 24px;
+      margin-bottom: 32px;
+      display: inline-block;
+    }
+    #qrcode {
+      display: flex;
+      justify-content: center;
+    }
+    #qrcode canvas {
+      border-radius: 16px;
+    }
+    .url-box {
+      background: #F5F7FA;
+      padding: 20px 32px;
+      border-radius: 16px;
+      margin-bottom: 24px;
+      word-break: break-all;
+    }
+    .url-label {
+      font-size: 12px;
+      color: #6B7280;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .url-value {
+      font-size: 20px;
+      color: #2E7D32;
+      font-weight: 800;
+    }
+    .url-value a {
+      color: #2E7D32;
+      text-decoration: none;
+    }
+    .url-value a:hover {
+      text-decoration: underline;
+    }
+    .btn {
+      display: inline-block;
+      background: #2E7D32;
+      color: white;
+      padding: 16px 48px;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.3s;
+      margin: 8px;
+    }
+    .btn:hover {
+      background: #1B5E20;
+      transform: translateY(-2px);
+    }
+    .btn-secondary {
+      background: #FBC02D;
+      color: #1A1A1A;
+    }
+    .btn-secondary:hover {
+      background: #F9A825;
+    }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 32px;
+      text-align: left;
+    }
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: #F5F7FA;
+      border-radius: 12px;
+    }
+    .feature-icon {
+      width: 40px;
+      height: 40px;
+      background: #E8F5E9;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    .feature-text {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+    }
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #E8F5E9;
+      color: #2E7D32;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #2E7D32;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <div class="logo-icon">🌾</div>
+      <div class="logo-text">AgriConnection</div>
+    </div>
+
+    <div class="status">
+      <span class="status-dot"></span>
+      Application Running
+    </div>
+
+    <h1>Kenya's Smart Agriculture Platform</h1>
+    <p class="subtitle">Connecting farmers, buyers, and suppliers across East Africa</p>
+
+    <div class="qr-container">
+      <div id="qrcode"></div>
+    </div>
+
+    <div class="url-box">
+      <div class="url-label">Live Application URL</div>
+      <div class="url-value"><a id="app-url" href="#" target="_blank"></a></div>
+    </div>
+
+    <div>
+      <a id="open-btn" class="btn" href="#" target="_blank">Open Application</a>
+      <a id="copy-btn" class="btn btn-secondary" href="#">Copy URL</a>
+    </div>
+
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">🤖</div>
+        <div class="feature-text">AI Farm Advisor</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🛒</div>
+        <div class="feature-text">Live Marketplace</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🌤️</div>
+        <div class="feature-text">GPS Weather</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">💳</div>
+        <div class="feature-text">M-Pesa Payments</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📍</div>
+        <div class="feature-text">Farmers Map</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">👥</div>
+        <div class="feature-text">Community Hub</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Get the current host
+    const protocol = window.location.protocol;
+    const host = window.location.host;
+    const appUrl = `${protocol}//${host}`;
+
+    // Update the page with the URL
+    document.getElementById('app-url').textContent = appUrl;
+    document.getElementById('app-url').href = appUrl;
+    document.getElementById('open-btn').href = appUrl;
+
+    // Generate QR Code
+    QRCode.toCanvas(appUrl, {
+      width: 250,
+      margin: 2,
+      color: {
+        dark: '#2E7D32',
+        light: '#ffffff'
+      }
+    }, function(error) {
+      if (error) console.error(error);
+    });
+
+    // Copy button functionality
+    document.getElementById('copy-btn').addEventListener('click', function(e) {
+      e.preventDefault();
+      navigator.clipboard.writeText(appUrl).then(() => {
+        const btn = e.target;
+        const original = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = original, 2000);
+      });
+    });
+  </script>
+</body>
+</html>
