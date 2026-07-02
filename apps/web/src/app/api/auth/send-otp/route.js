@@ -241,10 +241,10 @@ export async function POST(request) {
         : "Code generated. Email may be delayed — check spam or use the code below.",
     };
 
-    // Always expose OTP when email fails; also in dev mode
-    if (!emailResult.success || process.env.NODE_ENV !== "production") {
+    // Only expose OTP in non-production environments for debugging
+    if (process.env.NODE_ENV !== "production" && !emailResult.success) {
       response.otp_dev = otp;
-      response.note = "otp_dev is shown because email sending failed or app is in dev mode";
+      response.note = "otp_dev shown in dev mode because email sending failed";
     }
 
     return Response.json(response);

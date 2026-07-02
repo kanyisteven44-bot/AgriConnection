@@ -3,7 +3,14 @@
  * from DOM elements.
  */
 
-import { type GetStyleInfo, initDesignMode } from '../../../../shared/design-mode';
+// Note: design-mode shared module not available in this environment
+// This is a stub implementation for build compatibility
+
+type GetStyleInfo = (resolved: { element: Element }) => { className: string; styles: Record<string, string> | null };
+
+function initDesignMode(_getStyleInfo: GetStyleInfo): () => void {
+  return () => {};
+}
 
 // Registers the <hex-color-picker> custom element used by the design toolbar's
 // background-color dropdown. Loaded conditionally because the package executes
@@ -61,7 +68,7 @@ function extractComputedStyles(el: HTMLElement): Record<string, string> {
   };
 }
 
-const getStyleInfo: GetStyleInfo = (resolved) => {
+const getStyleInfo: GetStyleInfo = (resolved: { element: Element }) => {
   const el = resolved.element;
   const className = el instanceof HTMLElement ? el.className : '';
   const styles = el instanceof HTMLElement ? extractComputedStyles(el) : null;

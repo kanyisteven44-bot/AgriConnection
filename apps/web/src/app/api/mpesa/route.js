@@ -92,10 +92,7 @@ export async function POST(request) {
     const stkData = await stkRes.json();
 
     if (stkData.ResponseCode === "0") {
-      // Log payment attempt
-      if (order_id) {
-        await sql`UPDATE orders SET status = 'paid' WHERE id = ${order_id}`;
-      }
+      // Payment initiated successfully - status will be updated by callback
       return Response.json({ success: true, ...stkData });
     } else {
       return Response.json(

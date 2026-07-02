@@ -19,7 +19,8 @@ export async function GET(request) {
 
     if (category !== "all") {
       params.push(category);
-      whereClause += ` WHERE (p.category = $${params.length} OR p.post_type = $${params.length})`;
+      const paramIdx = params.length;
+      whereClause += ` WHERE (p.category = $${paramIdx} OR p.post_type = $${paramIdx})`;
     }
 
     if (search) {
