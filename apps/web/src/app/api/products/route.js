@@ -63,7 +63,8 @@ export async function GET(request) {
     }
     if (query) {
       params.push(`%${query}%`);
-      sqlQuery += ` AND (p.name ILIKE $${params.length} OR p.description ILIKE $${params.length})`;
+      const paramIdx = params.length;
+      sqlQuery += ` AND (p.name ILIKE $${paramIdx} OR p.description ILIKE $${paramIdx})`;
     }
 
     params.push(limit);

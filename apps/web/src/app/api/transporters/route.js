@@ -1,4 +1,5 @@
 import sql from "@/app/api/utils/sql";
+import { auth } from "@/auth";
 
 // Returns transporters with their location for the live map
 export async function GET(request) {
@@ -55,19 +56,37 @@ export async function GET(request) {
 // Update transporter location (called by transporter's app)
 export async function PUT(request) {
   try {
-    const { userId, latitude, longitude } = await request.json();
-    if (!userId || !latitude || !longitude) {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { latitude, longitude } = await request.json();
+    if (latitude == null || longitude == null) {
       return Response.json(
-        { error: "userId, latitude, longitude required" },
+        { error: "latitude and longitude required" },
         { status: 400 },
       );
     }
+
+    // Validate coordinate ranges
+    const lat = parseFloat(latitude);
+    const lng = parseFloat(longitude);
+    if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+      return Response.json(
+        { error: "Invalid coordinates. Latitude must be between -90 and 90, longitude between -180 and 180" },
+        { status: 400 },
+      );
+    }
+
+    const userId = session.user.id;
+
     await sql`
-      UPDATE auth_users SET latitude = ${latitude}, longitude = ${longitude}
+      UPDATE auth_users SET latitude = ${lat}, longitude = ${lng}
       WHERE id = ${userId} AND role = 'transporter'
     `;
     await sql`
-      UPDATE vehicles SET current_location = ${`${latitude},${longitude}`}
+      UPDATE vehicles SET current_location = ${`${lat},${lng}`}
       WHERE transporter_id = ${userId}
     `;
     return Response.json({ ok: true });

@@ -8,7 +8,7 @@
     "userInterfaceStyle": "light",
     "scheme": "agriconnection",
     "newArchEnabled": true,
-    "platforms": ["ios", "android"],
+    "platforms": ["ios", "android", "web"],
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
