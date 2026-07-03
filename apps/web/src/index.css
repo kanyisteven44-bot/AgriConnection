@@ -1,3 +1,52 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-primary { @apply bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500; }
+  .btn-secondary { @apply bg-accent-500 text-gray-900 hover:bg-accent-600; }
+  .btn-outline { @apply border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white; }
+  .btn-danger { @apply bg-red-600 text-white hover:bg-red-700; }
+  .btn-ghost { @apply bg-transparent hover:bg-gray-100 text-gray-700; }
+  .card { @apply bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden; }
+  .input {
+    @apply w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none transition-all;
+  }
+  .label { @apply block text-sm font-medium text-gray-700 mb-2; }
+  .loading-skeleton { @apply bg-gray-200 animate-pulse rounded; }
+}
+
+/* Leaflet overrides */
+.leaflet-container { height: 100%; width: 100%; border-radius: 1rem; }
+.leaflet-popup-content-wrapper { border-radius: 1rem; }
+.leaflet-control-zoom { border: none !important; }
+.leaflet-control-zoom a { border-radius: 8px !important; margin: 2px !important; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: #2E7D32; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #1B5E20; }
+
+/* Animations */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.animate-slide-up { animation: slideUp 0.4s ease-out forwards; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+.animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+/* Responsive utilities */
+@screen sm { .sm-container { max-width: 640px; } }
+@screen md { .md-container { max-width: 768px; } }
+@screen lg { .lg-container { max-width: 1024px; } }
+@screen xl { .xl-container { max-width: 1280px; } }
