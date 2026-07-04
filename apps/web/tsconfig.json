@@ -21,5 +21,13 @@
     }
   },
   "include": ["src"],
+  "exclude": [
+    "src/app",
+    "src/__create/design-mode.ts",
+    "src/__create/fetch.ts",
+    "src/__create/stripe.ts",
+    "src/__create/dev-error-overlay.js",
+    "src/__create/PolymorphicComponent.tsx"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

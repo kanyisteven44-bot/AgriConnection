@@ -33,7 +33,7 @@ REM Check 3: Build
 echo.
 echo 3️⃣  Build Check
 cd apps\web
-npm run typecheck >nul 2>&1
+call npm run typecheck >nul 2>&1
 if %ERRORLEVEL% EQU 0 (
   echo    ✅ Web app type checking passed
 ) else (

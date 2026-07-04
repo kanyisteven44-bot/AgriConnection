@@ -153,9 +153,16 @@ const knowledgeBase = {
   },
 };
 
-function generateAIResponse(userMessage: string, context?: string): Partial<Message['metadata']> {
+interface AIResponse {
+  content: string;
+  intent: string;
+  tips?: string[];
+  urgency: 'low' | 'medium' | 'high';
+}
+
+function generateAIResponse(userMessage: string, context?: string): AIResponse {
   const msg = userMessage.toLowerCase();
-  let response = { content: '', intent: 'general', tips: [] as string[] };
+  let response: { content: string; intent: string; tips?: string[] } = { content: '', intent: 'general', tips: [] };
   const tips = response.tips || [];
   let urgency: 'low' | 'medium' | 'high' = 'low';
 
@@ -177,7 +184,7 @@ Would you like to know about other pests like fall armyworm, whiteflies, or cutw
     tips.push('Inspect plants regularly', 'Encourage beneficial insects');
     urgency = 'medium';
   } else if (msg.includes('blight') || msg.includes('disease')) {
-    const data = knowledgeBase.diseases.late_blight;
+    const data = knowledgeBase.diseases['late blight'];
     response.content = `### Late Blight Management
 
 **Affected Crops:** ${data.crops}
@@ -227,7 +234,7 @@ What crops are you watering? I can recommend specific schedules.`;
     response.intent = 'irrigation';
     tips.push('Water early morning', 'Check soil moisture before watering');
   } else if (msg.includes('soil') || msg.includes('fertil') || msg.includes('compost')) {
-    const data = knowledgeBase.practices.soil_fertility;
+    const data = knowledgeBase.practices['soil fertility'];
     const compost = knowledgeBase.practices.composting;
     response.content = `### Soil Fertility Management
 
@@ -294,7 +301,7 @@ What would you like to know? Be specific about your crop, problem, or location f
   }
 
   response.tips = tips.length > 0 ? tips : undefined;
-  return { ...response, urgency } as any;
+  return { ...response, urgency } as AIResponse;
 }
 
 export default function AIAdvisor() {
@@ -351,12 +358,12 @@ export default function AIAdvisor() {
     const aiMessage: Message = {
       id: (Date.now() + 1).toString(),
       role: 'assistant',
-      content: (aiMetadata as any).content || 'I understand. Let me help you with that.',
+      content: aiMetadata.content || 'I understand. Let me help you with that.',
       created_at: new Date().toISOString(),
       metadata: {
         intent: aiMetadata.intent,
         tips: aiMetadata.tips,
-        urgency: (aiMetadata as any).urgency,
+        urgency: aiMetadata.urgency,
         confidence_level: 'high',
         topic_category: aiMetadata.intent,
       },

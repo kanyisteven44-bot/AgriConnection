@@ -24,7 +24,7 @@ export const useAuthStore = create<AuthState>()(
       setUser: (user) => set({ user, isAuthenticated: !!user, isLoading: false }),
       setLoading: (isLoading) => set({ isLoading }),
     }),
-    { name: 'agriconnection-auth', partialize: ['user', 'isAuthenticated'] }
+    { name: 'agriconnection-auth', partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }) }
   )
 );
 

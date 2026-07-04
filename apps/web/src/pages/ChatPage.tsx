@@ -114,7 +114,7 @@ export default function ChatPage() {
     {
       id: 'm2',
       chat_id: '1',
-      sender_id: user?.id || 'me',
+      sender_id: user?.id ? String(user.id) : 'me',
       sender_name: user?.name || 'Me',
       content: 'Yes, I have about 200kg ready for harvest. Where are you located?',
       type: 'text',
@@ -134,7 +134,7 @@ export default function ChatPage() {
     {
       id: 'm4',
       chat_id: '1',
-      sender_id: user?.id || 'me',
+      sender_id: user?.id ? String(user.id) : 'me',
       sender_name: user?.name || 'Me',
       content: 'Sure! I\'m available from 9am to 4pm. Call me when you\'re on your way.',
       type: 'text',
@@ -154,9 +154,7 @@ export default function ChatPage() {
   }, [messages]);
 
   const filteredChats = sampleChats.filter(chat => {
-    const name = chat.type === 'group'
-      ? chat.name
-      : chat.participants[0]?.name || 'Unknown';
+    const name = (chat.type === 'group' ? chat.name : chat.participants[0]?.name) || 'Unknown';
     return name.toLowerCase().includes(search.toLowerCase());
   });
 
@@ -166,7 +164,7 @@ export default function ChatPage() {
     const newMessage: Message = {
       id: Date.now().toString(),
       chat_id: activeChat?.id || '1',
-      sender_id: user?.id || 'me',
+      sender_id: user?.id ? String(user.id) : 'me',
       sender_name: user?.name || 'Me',
       content: message,
       type: 'text',
@@ -200,12 +198,12 @@ export default function ChatPage() {
           const reactions = m.reactions || [];
           const existing = reactions.find(r => r.emoji === emoji);
           if (existing) {
-            if (existing.users.includes(user?.id || 'me')) {
+            if (existing.users.includes(String(user?.id || 'me'))) {
               return {
                 ...m,
                 reactions: reactions.map(r =>
                   r.emoji === emoji
-                    ? { ...r, users: r.users.filter(u => u !== (user?.id || 'me')) }
+                    ? { ...r, users: r.users.filter(u => u !== String(user?.id || 'me')) }
                     : r
                 ).filter(r => r.users.length > 0),
               };
@@ -213,14 +211,14 @@ export default function ChatPage() {
               return {
                 ...m,
                 reactions: reactions.map(r =>
-                  r.emoji === emoji ? { ...r, users: [...r.users, user?.id || 'me'] } : r
+                  r.emoji === emoji ? { ...r, users: [...r.users, String(user?.id || 'me')] } : r
                 ),
               };
             }
           } else {
             return {
               ...m,
-              reactions: [...reactions, { emoji, users: [user?.id || 'me'] }],
+              reactions: [...reactions, { emoji, users: [String(user?.id || 'me')] }],
             };
           }
         }
@@ -495,7 +493,7 @@ export default function ChatPage() {
                                   key={r.emoji}
                                   onClick={() => handleReaction(msg.id, r.emoji)}
                                   className={`text-sm px-2 py-0.5 rounded-full ${
-                                    r.users.includes(user?.id || 'me')
+                                    r.users.includes(String(user?.id || 'me'))
                                       ? 'bg-primary-100'
                                       : 'bg-gray-100'
                                   }`}

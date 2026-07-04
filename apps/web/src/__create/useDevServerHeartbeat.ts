@@ -1,21 +1,32 @@
-import { useIdleTimer } from 'react-idle-timer';
+import { useEffect, useRef } from 'react';
 
 export function useDevServerHeartbeat() {
-  useIdleTimer({
-    disabled: typeof window === 'undefined',
-    throttle: 60_000 * 3,
-    timeout: 60_000,
-    onAction: () => {
-      // HACK: at time of writing, we run the dev server on a proxy url that
-      // when requested, ensures that the dev server's life is extended. If
-      // the user is using a page or is active in it in the app, but when the
-      // user has popped out their preview, they no longer can rely on the
-      // app to do this. This hook ensures it stays alive.
-      fetch('/', {
-        method: 'GET',
-      }).catch((error) => {
-        // this is a no-op, we just want to keep the dev server alive
-      });
-    },
-  });
+  const lastCall = useRef(0);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleAction = () => {
+      const now = Date.now();
+      // Throttle to once every 3 minutes (180,000 ms)
+      if (now - lastCall.current > 180_000) {
+        lastCall.current = now;
+        fetch('/', {
+          method: 'GET',
+        }).catch((error) => {
+          // this is a no-op, we just want to keep the dev server alive
+        });
+      }
+    };
+
+    const events = ['mousedown', 'keydown', 'touchstart', 'scroll'];
+    events.forEach((event) => window.addEventListener(event, handleAction));
+
+    // Run once initially
+    handleAction();
+
+    return () => {
+      events.forEach((event) => window.removeEventListener(event, handleAction));
+    };
+  }, []);
 }

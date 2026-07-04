@@ -31,7 +31,7 @@ export default function Profile() {
   const { userId } = useParams();
   const { user: currentUser } = useAuthStore();
   const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'reviews' | 'activity'>('overview');
-  const isOwnProfile = !userId || userId === currentUser?.id;
+  const isOwnProfile = !userId || userId === String(currentUser?.id);
 
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ['profile', userId],
@@ -49,6 +49,7 @@ export default function Profile() {
 
       return data ? {
         ...data,
+        id: String(data.id),
         stats: {
           products: Math.floor(Math.random() * 20),
           orders: Math.floor(Math.random() * 50),
@@ -121,7 +122,9 @@ export default function Profile() {
                   <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                     {profile.name}
                     {profile.verified && (
-                      <Shield className="h-5 w-5 text-green-500" title="Verified" />
+                      <span title="Verified">
+                        <Shield className="h-5 w-5 text-green-500" />
+                      </span>
                     )}
                   </h1>
                   <span className="inline-flex items-center gap-1 text-sm text-gray-600 capitalize mt-1">

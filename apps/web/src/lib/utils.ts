@@ -48,7 +48,7 @@ export function generateId(): string {
 
 // Debounce function
 export function debounce<T extends (...args: any[]) => void>(fn: T, delay: number): T {
-  let timeoutId: NodeJS.Timeout;
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
   return ((...args: Parameters<T>) => {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => fn(...args), delay);
